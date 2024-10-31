@@ -4,10 +4,9 @@ import com.soa.manageLaptop.model.User;
 import com.soa.manageLaptop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -20,6 +19,11 @@ public class UserController {
     public ResponseEntity<String> register(@RequestBody User user) {
         userService.registerUser(user);
         return ResponseEntity.ok("User registered successfully");
+    }
+
+    @GetMapping("/findAll")
+    public ResponseEntity<List<User>> findAll() {
+        return ResponseEntity.ok(userService.findAll());
     }
 }
 
