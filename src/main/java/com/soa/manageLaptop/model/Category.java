@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -13,22 +12,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Promotion {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String code;
-    private double discount;
-    private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private int maxUses;
+    private String name;
 
-    @ManyToMany
-    private List<Product> applicableProducts;
-
-    public Promotion(String s, int i, int i1) {
-    }
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 
     // Constructors, Getters, Setters
 }
