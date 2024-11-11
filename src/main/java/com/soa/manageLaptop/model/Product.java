@@ -25,7 +25,7 @@ public class Product {
     @ManyToOne
     private Category category;
 
-    @ManyToMany(mappedBy = "applicableProducts")
+    @ManyToMany(mappedBy = "products")
     private List<Promotion> promotions;
 
     public Product(String laptopA, String laptopA1, String brandA, String descriptionA, int i, String image) {

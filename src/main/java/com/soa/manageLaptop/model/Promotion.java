@@ -25,10 +25,5 @@ public class Promotion {
     private int maxUses;
 
     @ManyToMany
-    private List<Product> applicableProducts;
-
-    public Promotion(String s, int i, int i1) {
-    }
-
-    // Constructors, Getters, Setters
+    private List<Product> products;
 }

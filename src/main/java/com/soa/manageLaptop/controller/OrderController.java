@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -22,8 +23,19 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @GetMapping
+    @GetMapping("/monthly-count")
+    public Map<String, Long> getOrdersCountByMonth() {
+        return orderService.getOrdersCountByMonth();
+    }
+
+    @GetMapping("/api/orders")
     public ResponseEntity<List<Order>> getOrderByUser(@RequestParam Long id) {
         return ResponseEntity.ok(orderService.getOrdersByUser(id));
     }
+
+    @GetMapping()
+    public List<Order> getOrders() {
+        return orderService.getAllOrders();
+    }
+
 }

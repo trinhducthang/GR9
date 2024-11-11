@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Dashboard</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .chart-container {
+            width: 80%;
+            margin: 0 auto;
+            padding-bottom: 30px;
+        }
+        .table-container {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Order Dashboard</h1>
+</header>
+
+<div class="container">
+
+    <!-- Biểu đồ số lượng đơn hàng theo tháng -->
+    <div class="chart-container">
+        <h3>Số lượng đơn hàng theo tháng</h3>
+        <canvas id="ordersChart"></canvas>
+    </div>
+
+    <!-- Bảng thông tin đơn hàng -->
+    <div class="table-container">
+        <h3>Thông tin đơn hàng</h3>
+        <table id="ordersTable">
+            <thead>
+            <tr>
+                <th>ID Đơn Hàng</th>
+                <th>Người Dùng</th>
+                <th>Ngày Đặt Hàng</th>
+                <th>Trạng Thái</th>
+                <th>Tổng Giá</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Các đơn hàng sẽ được render ở đây bằng JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // Fetch dữ liệu từ API
+    async function fetchData() {
+        try {
+            // Lấy số lượng đơn hàng theo tháng
+            const ordersCountByMonthResponse = await fetch('/api/orders/monthly-count');
+            const ordersCountByMonth = await ordersCountByMonthResponse.json();
+
+            // Lấy thông tin đơn hàng
+            const ordersResponse = await fetch('/api/orders');
+            const orders = await ordersResponse.json();
+
+            // Xử lý biểu đồ
+            const chartData = {
+                labels: Object.keys(ordersCountByMonth), // Các tháng (key của bản đồ)
+                datasets: [{
+                    label: 'Số lượng đơn hàng',
+                    data: Object.values(ordersCountByMonth), // Số lượng đơn hàng (value của bản đồ)
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                }]
+            };
+
+            const ctx = document.getElementById('ordersChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tháng'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Số lượng'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Xử lý bảng thông tin đơn hàng
+            const ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
+            orders.forEach(order => {
+                const row = ordersTable.insertRow();
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.user.name}</td>
+                    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                    <td>${order.status}</td>
+                    <td>${order.totalPrice}</td>
+                `;
+            });
+
+        } catch (error) {
+            console.error('Lỗi khi fetch dữ liệu:', error);
+        }
+    }
+
+    // Gọi hàm fetch dữ liệu khi trang được tải
+    fetchData();
+</script>
+
+</body>
+</html>

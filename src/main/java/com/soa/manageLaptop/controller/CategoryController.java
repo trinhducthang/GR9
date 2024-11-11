@@ -1,5 +1,6 @@
 package com.soa.manageLaptop.controller;
 
+import com.soa.manageLaptop.dto.response.request.CategoryRequest;
 import com.soa.manageLaptop.model.Category;
 import com.soa.manageLaptop.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-        return new ResponseEntity<>(categoryService.saveCategory(category), HttpStatus.CREATED);
+    public ResponseEntity<Category> createCategory(@RequestBody CategoryRequest categoryRequest) {
+        return new ResponseEntity<>(categoryService.saveCategory(categoryRequest.getName(), categoryRequest.getIds()), HttpStatus.CREATED);
     }
+
 }

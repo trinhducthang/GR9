@@ -30,12 +30,6 @@ public class Order {
     @Column(name = "product_id")
     private List<Long> productIds = new ArrayList<>();
 
-    public Order(User user, List<Product> list, String processing) {
-    }
 
-    public Order() {
-
-    }
-
-    // Constructors, Getters, Setters
+    public Order() {}
 }

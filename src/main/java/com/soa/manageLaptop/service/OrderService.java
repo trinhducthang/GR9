@@ -10,8 +10,11 @@ import com.soa.manageLaptop.request.OrderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +51,23 @@ public class OrderService {
     public List<Order> getOrdersByUser(Long id) {
         User user = userRepository.getById(id);
         return orderRepository.findByUser(user);
+    }
+
+    public Map<String, Long> getOrdersCountByMonth() {
+        List<Order> orders = orderRepository.findAll();
+        Map<String, Long> ordersCountByMonth = new HashMap<>();
+
+        for (Order order : orders) {
+            LocalDate orderDate = order.getOrderDate().toLocalDate();
+            String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
+            ordersCountByMonth.put(monthYear, ordersCountByMonth.getOrDefault(monthYear, 0L) + 1);
+        }
+
+        return ordersCountByMonth;
+    }
+
+    public List<Order> getAllOrders(){
+        return orderRepository.findAll();
     }
 }
 
