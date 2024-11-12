@@ -1,5 +1,7 @@
 package com.soa.manageLaptop.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +25,8 @@ public class Product {
     private String imageUrl;
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
+    @JsonBackReference
     private Category category;
 
     @ManyToMany(mappedBy = "products")

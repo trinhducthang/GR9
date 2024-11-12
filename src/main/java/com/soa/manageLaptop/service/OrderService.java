@@ -69,5 +69,20 @@ public class OrderService {
     public List<Order> getAllOrders(){
         return orderRepository.findAll();
     }
+
+    public Map<String, Integer> getOrdersCountByDay(int month, int year) {
+        List<Order> orders = orderRepository.findAll(); // Lấy tất cả đơn hàng (có thể thêm lọc theo tháng và năm)
+
+        Map<String, Integer> dailyCounts = new HashMap<>();
+        for (Order order : orders) {
+            LocalDate orderDate = order.getOrderDate().toLocalDate();
+            if (orderDate.getMonthValue() == month && orderDate.getYear() == year) {
+                String dayKey = orderDate.toString();  // Chuyển thành String "yyyy-MM-dd"
+                dailyCounts.put(dayKey, dailyCounts.getOrDefault(dayKey, 0) + 1);
+            }
+        }
+
+        return dailyCounts;
+    }
 }
 

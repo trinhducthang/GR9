@@ -38,4 +38,9 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
+    @GetMapping("/daily-count")
+    public Map<String, Integer> getOrdersCountByDay(@RequestParam int month, @RequestParam int year) {
+        return orderService.getOrdersCountByDay(month, year);
+    }
+
 }

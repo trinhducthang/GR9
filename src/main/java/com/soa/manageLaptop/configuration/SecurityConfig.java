@@ -27,6 +27,7 @@ public class SecurityConfig {
             "/auth/token",
             "/api/users/**",
             "/**",
+            "api/products/**"
 
     };
 
@@ -35,7 +36,7 @@ public class SecurityConfig {
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/**",
-            "/api/orders/**"
+            "/api/orders/**",
     };
 
     private final String[] PUBLIC_UI_ENDPOINTS ={
@@ -55,6 +56,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET,PUBLIC_GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_UI_ENDPOINTS).permitAll()
+                                .requestMatchers(HttpMethod.DELETE,"api/products/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT,"api/products/**").permitAll()
 //                        .requestMatchers(HttpMethod.GET, "", "").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )

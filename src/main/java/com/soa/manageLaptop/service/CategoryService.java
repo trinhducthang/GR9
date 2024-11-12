@@ -37,12 +37,20 @@ public class CategoryService {
             List<Product> newProducts = category.getProducts();
             newProducts.addAll(products);
             category.setProducts(products);
+            for(Product product : newProducts) {
+                product.setCategory(category);
+                productRepository.save(product);
+            }
             return categoryRepository.save(category);
         }
         else {
             category = new Category();
             category.setName(name);
             category.setProducts(products);
+            for(Product product : products) {
+                product.setCategory(category);
+                productRepository.save(product);
+            }
         }
 
         // Lưu danh mục với các sản phẩm đã cập nhật
