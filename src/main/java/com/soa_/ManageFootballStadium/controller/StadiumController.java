@@ -1,5 +1,6 @@
 package com.soa_.ManageFootballStadium.controller;
 
+import com.soa_.ManageFootballStadium.model.Review;
 import com.soa_.ManageFootballStadium.model.Stadium;
 import com.soa_.ManageFootballStadium.service.StadiumService;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,10 @@ public class StadiumController {
     public ResponseEntity<Stadium> getStadiumDetails(@PathVariable Long stadiumId) {
         Stadium stadium = stadiumService.getStadiumDetails(stadiumId);
         return stadium != null ? ResponseEntity.ok(stadium) : ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/{stadiumId}/reviews")
+    public void addReview(@PathVariable Long stadiumId, @RequestBody Review review) {
+        stadiumService.addReview(stadiumId, review);
     }
 }
