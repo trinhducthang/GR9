@@ -151,7 +151,7 @@
             <input type="number" id="rating" placeholder="Điểm đánh giá (0-5)" step="0.1" min="0" max="5" required>
         </div>
 
-        <button type="button" class="btn btn-primary" onclick="addStadium()">Thêm Sân</button>
+        <button type="button" class="btn btn-primary" onclick="saveStadium()">Thêm Sân</button>
         <button type="button" class="btn btn-danger" onclick="cancelForm()">Hủy</button>
     </div>
 
@@ -179,6 +179,7 @@
     let stadiums = [];
     const itemsPerPage = 5;
     let currentPage = 1;
+    let editingStadiumId = null;  // Biến để lưu ID của sân bóng đang chỉnh sửa
 
     // Hàm hiển thị danh sách sân bóng
     function loadStadiums() {
@@ -252,8 +253,8 @@
         renderPagination();
     }
 
-    // Thêm sân mới
-    function addStadium() {
+    // Thêm hoặc Cập nhật sân bóng
+    function saveStadium() {
         const name = document.getElementById('name').value;
         const address = document.getElementById('address').value;
         const price = document.getElementById('price').value;
@@ -261,19 +262,36 @@
 
         const newStadium = { name, address, price, rating };
 
-        fetch('/api/stadiums', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newStadium)
-        })
-            .then(response => response.json())
-            .then(data => {
-                stadiums.push(data);
-                renderStadiumTable();
-                renderPagination();
-                cancelForm();
+        if (editingStadiumId) {  // Nếu đang chỉnh sửa sân bóng
+            fetch(`/api/stadiums/${editingStadiumId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newStadium)
             })
-            .catch(error => console.error('Error adding stadium:', error));
+                .then(response => response.json())
+                .then(data => {
+                    const index = stadiums.findIndex(stadium => stadium.id === editingStadiumId);
+                    stadiums[index] = data;
+                    renderStadiumTable();
+                    renderPagination();
+                    cancelForm();
+                })
+                .catch(error => console.error('Error updating stadium:', error));
+        } else {  // Nếu đang thêm mới sân bóng
+            fetch('/api/stadiums', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newStadium)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    stadiums.push(data);
+                    renderStadiumTable();
+                    renderPagination();
+                    cancelForm();
+                })
+                .catch(error => console.error('Error adding stadium:', error));
+        }
     }
 
     // Chỉnh sửa sân bóng
@@ -286,6 +304,8 @@
             document.getElementById('price').value = stadium.price;
             document.getElementById('rating').value = stadium.rating;
             document.getElementById('form-container').style.display = 'block';
+            editingStadiumId = id;  // Lưu ID sân bóng đang sửa
+            document.querySelector('.btn-primary').innerText = 'Cập nhật Sân';  // Thay đổi nút thành Cập nhật
         }
     }
 
@@ -295,6 +315,8 @@
         document.getElementById('address').value = '';
         document.getElementById('price').value = '';
         document.getElementById('rating').value = '';
+        editingStadiumId = null;  // Reset ID khi hủy
+        document.querySelector('.btn-primary').innerText = 'Thêm Sân';  // Đặt lại nút về Thêm
     }
 
     // Xóa sân
@@ -312,6 +334,8 @@
     function showAddForm() {
         document.getElementById('form-title').innerText = 'Thêm Sân Bóng Mới';
         document.getElementById('form-container').style.display = 'block';
+        editingStadiumId = null;  // Reset khi thêm mới
+        document.querySelector('.btn-primary').innerText = 'Thêm Sân';  // Đặt lại nút về Thêm
     }
 
     // Khi trang được tải, gọi hàm loadStadiums để lấy dữ liệu
