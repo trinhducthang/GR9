@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Danh Mục</title>
     <style>
-        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -236,35 +235,36 @@
 
     // Lấy danh sách sản phẩm
     async function fetchProducts() {
-        const response = await fetch('/api/products');
+        const response = await fetch('/api/products');  // API lấy sản phẩm
         const products = await response.json();
 
         const productsList = document.getElementById('products-list');
-        productsList.innerHTML = ''; // Xóa dữ liệu cũ
+        productsList.innerHTML = '';  // Xóa dữ liệu cũ
 
         products.forEach(product => {
-            const productCheckbox = document.createElement('div');
-            productCheckbox.innerHTML = `
-                    <input type="checkbox" class="product-checkbox" value="${product.id}" /> ${product.name}
-                `;
-            productsList.appendChild(productCheckbox);
+            const productDiv = document.createElement('div');
+            productDiv.innerHTML = `
+                <input type="checkbox" class="product-checkbox" value="${product.id}" />
+                <label>${product.name}</label>
+            `;
+            productsList.appendChild(productDiv);
         });
     }
 
-    // Sửa danh mục
+    // Chỉnh sửa danh mục
     async function editCategory(categoryId) {
         editingCategoryId = categoryId;
+
         const response = await fetch(`/api/categories/${categoryId}`);
         const category = await response.json();
 
-        document.getElementById('modal-title').textContent = 'Chỉnh Sửa Danh Mục';
         document.getElementById('category-name').value = category.name;
+        document.getElementById('modal-title').textContent = 'Cập Nhật Danh Mục';
 
-        // Hiển thị sản phẩm đã được chọn trong modal
+        // Hiển thị danh sách sản phẩm đã chọn
         fetchProducts().then(() => {
-            const selectedProductIds = category.products.map(p => p.id);
-            const checkboxes = document.querySelectorAll('.product-checkbox');
-            checkboxes.forEach(checkbox => {
+            const selectedProductIds = category.products.map(product => product.id);
+            document.querySelectorAll('.product-checkbox').forEach(checkbox => {
                 if (selectedProductIds.includes(parseInt(checkbox.value))) {
                     checkbox.checked = true;
                 }
@@ -274,10 +274,8 @@
         document.getElementById('category-modal').style.display = 'block';
     }
 
-    // Gọi API khi load trang
-    window.onload = function() {
-        fetchCategories();
-    };
+    // Khi tải trang, lấy danh sách danh mục
+    window.onload = fetchCategories;
 </script>
 </body>
 </html>

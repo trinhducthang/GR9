@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
+
     @Autowired
     private CategoryService categoryService;
 
@@ -23,21 +24,23 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<Category> createCategory(@RequestBody CategoryRequest categoryRequest) {
-        return new ResponseEntity<>(categoryService.saveCategory(categoryRequest.getName(), categoryRequest.getIds()), HttpStatus.CREATED);
+        // Gọi service để tạo danh mục mới
+        Category createdCategory = categoryService.saveCategory(categoryRequest.getName(), categoryRequest.getIds());
+        return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody CategoryRequest categoryRequest) {
+        // Gọi service để cập nhật danh mục
         Category updatedCategory = categoryService.updateCategory(id, categoryRequest.getName(), categoryRequest.getIds());
         if (updatedCategory != null) {
             return ResponseEntity.ok(updatedCategory);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Nếu danh mục không tồn tại
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Trả về 404 nếu danh mục không tồn tại
     }
 
     @GetMapping("/{id}")
     public Category getCategory(@PathVariable Long id) {
         return categoryService.getCategoryById(id);
     }
-
 }

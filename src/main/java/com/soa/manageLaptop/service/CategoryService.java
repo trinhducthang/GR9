@@ -22,65 +22,72 @@ public class CategoryService {
     @Autowired
     private ProductRepository productRepository;
 
+    // Lấy tất cả các danh mục
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
+    // Tạo danh mục mới hoặc cập nhật danh mục nếu danh mục đã tồn tại
     public Category saveCategory(String name, long[] ids) {
         // Tìm danh sách các sản phẩm bằng cách sử dụng findByIdIn
         List<Product> products = productRepository.findByIdIn(Arrays.stream(ids).boxed().collect(Collectors.toList()));
 
-        // Gán danh sách sản phẩm vào category
+        // Tạo hoặc lấy danh mục theo tên
         Category category = categoryRepository.findByName(name);
 
-        if(category != null) {
-            List<Product> newProducts = category.getProducts();
-            newProducts.addAll(products);
-            category.setProducts(products);
-            for(Product product : newProducts) {
-                product.setCategory(category);
-                productRepository.save(product);
-            }
-            return categoryRepository.save(category);
-        }
-        else {
+        if (category == null) {
+            // Nếu không tìm thấy danh mục, tạo danh mục mới
             category = new Category();
             category.setName(name);
-            category.setProducts(products);
-            for(Product product : products) {
-                product.setCategory(category);
-                productRepository.save(product);
-            }
         }
 
-        // Lưu danh mục với các sản phẩm đã cập nhật
-        return categoryRepository.save(category);
-    }
-
-    public Category updateCategory(Long categoryId, String name, long[] ids) {
-        // Tìm danh mục theo ID
-        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
-        if (!optionalCategory.isPresent()) {
-            return null; // Nếu danh mục không tồn tại
-        }
-
-        Category category = optionalCategory.get();
-        category.setName(name);
-
-        // Tìm danh sách các sản phẩm cần gắn vào danh mục
-        List<Product> products = productRepository.findByIdIn(Arrays.stream(ids).boxed().collect(Collectors.toList()));
-
-        // Cập nhật sản phẩm trong danh mục
+        // Gán danh sách sản phẩm vào danh mục
         category.setProducts(products);
+
+        // Lưu danh mục (với cascade, sản phẩm cũng sẽ được lưu)
+        category = categoryRepository.save(category);
+
+        // Sau khi lưu danh mục, bạn phải cập nhật các sản phẩm để chúng tham chiếu đến danh mục này
         for (Product product : products) {
             product.setCategory(category);
             productRepository.save(product);
         }
 
-        return categoryRepository.save(category); // Lưu lại danh mục đã cập nhật
+        return category;
     }
 
+
+    // Cập nhật danh mục
+    public Category updateCategory(Long categoryId, String name, long[] ids) {
+        // Tìm danh mục theo ID
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+        if (!optionalCategory.isPresent()) {
+            return null;  // Nếu không tìm thấy danh mục, trả về null
+        }
+
+        Category category = optionalCategory.get();
+        category.setName(name);
+
+        // Tìm danh sách sản phẩm cần gắn vào danh mục
+        List<Product> products = productRepository.findByIdIn(Arrays.stream(ids).boxed().collect(Collectors.toList()));
+
+        // Thêm các sản phẩm vào danh mục (không thay thế sản phẩm cũ)
+        List<Product> newProducts = category.getProducts();
+        newProducts.addAll(products);  // Thêm sản phẩm mới vào danh mục
+
+        category.setProducts(newProducts);
+
+        // Cập nhật lại thông tin sản phẩm trong cơ sở dữ liệu
+        for (Product product : newProducts) {
+            product.setCategory(category);
+            productRepository.save(product);  // Lưu lại sản phẩm
+        }
+
+        return categoryRepository.save(category);  // Lưu lại danh mục đã cập nhật
+    }
+
+    // Lấy danh mục theo ID
     public Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId).get();
+        return categoryRepository.findById(categoryId).orElse(null);
     }
 }
