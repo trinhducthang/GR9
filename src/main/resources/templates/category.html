@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Danh Mục</title>
     <style>
+        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -57,6 +58,7 @@
             padding: 5px 10px;
             border: none;
             cursor: pointer;
+            margin: 0 5px;
         }
 
         td button:hover {
@@ -123,6 +125,19 @@
         form button:hover {
             background-color: #45a049;
         }
+
+        /* Delete Button */
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -184,6 +199,7 @@
                     <td>${category.products.length}</td>
                     <td>
                         <button onclick="editCategory(${category.id})">Sửa</button>
+                        <button class="delete-button" onclick="deleteCategory(${category.id})">Xóa</button>
                     </td>
                 `;
             categoriesList.appendChild(row);
@@ -235,36 +251,35 @@
 
     // Lấy danh sách sản phẩm
     async function fetchProducts() {
-        const response = await fetch('/api/products');  // API lấy sản phẩm
+        const response = await fetch('/api/products');
         const products = await response.json();
 
         const productsList = document.getElementById('products-list');
-        productsList.innerHTML = '';  // Xóa dữ liệu cũ
+        productsList.innerHTML = ''; // Xóa dữ liệu cũ
 
         products.forEach(product => {
-            const productDiv = document.createElement('div');
-            productDiv.innerHTML = `
-                <input type="checkbox" class="product-checkbox" value="${product.id}" />
-                <label>${product.name}</label>
-            `;
-            productsList.appendChild(productDiv);
+            const productCheckbox = document.createElement('div');
+            productCheckbox.innerHTML = `
+                    <input type="checkbox" class="product-checkbox" value="${product.id}" /> ${product.name}
+                `;
+            productsList.appendChild(productCheckbox);
         });
     }
 
-    // Chỉnh sửa danh mục
+    // Sửa danh mục
     async function editCategory(categoryId) {
         editingCategoryId = categoryId;
-
         const response = await fetch(`/api/categories/${categoryId}`);
         const category = await response.json();
 
+        document.getElementById('modal-title').textContent = 'Chỉnh Sửa Danh Mục';
         document.getElementById('category-name').value = category.name;
-        document.getElementById('modal-title').textContent = 'Cập Nhật Danh Mục';
 
-        // Hiển thị danh sách sản phẩm đã chọn
+        // Hiển thị sản phẩm đã được chọn trong modal
         fetchProducts().then(() => {
-            const selectedProductIds = category.products.map(product => product.id);
-            document.querySelectorAll('.product-checkbox').forEach(checkbox => {
+            const selectedProductIds = category.products.map(p => p.id);
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(checkbox => {
                 if (selectedProductIds.includes(parseInt(checkbox.value))) {
                     checkbox.checked = true;
                 }
@@ -274,7 +289,24 @@
         document.getElementById('category-modal').style.display = 'block';
     }
 
-    // Khi tải trang, lấy danh sách danh mục
+    // Xóa danh mục
+    async function deleteCategory(categoryId) {
+        const confirmDelete = confirm("Bạn có chắc chắn muốn xóa danh mục này?");
+        if (confirmDelete) {
+            const response = await fetch(`/api/categories/${categoryId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert("Danh mục đã được xóa!");
+                fetchCategories();  // Cập nhật lại danh sách sau khi xóa
+            } else {
+                alert("Xóa danh mục thất bại!");
+            }
+        }
+    }
+
+    // Fetch danh mục khi trang tải
     window.onload = fetchCategories;
 </script>
 </body>

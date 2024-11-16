@@ -57,6 +57,27 @@ public class CategoryService {
     }
 
 
+    public boolean deleteCategory(Long categoryId) {
+        Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
+
+        if (categoryOpt.isPresent()) {
+            Category category = categoryOpt.get();
+
+            // Cập nhật tất cả sản phẩm gắn với danh mục này để gỡ bỏ liên kết (nếu muốn giữ sản phẩm trong CSDL)
+            List<Product> products = category.getProducts();
+            for (Product product : products) {
+                product.setCategory(null);  // Gỡ bỏ liên kết category
+                productRepository.save(product);  // Cập nhật lại sản phẩm
+            }
+
+            // Xóa danh mục
+            categoryRepository.delete(category);
+            return true;
+        } else {
+            return false;  // Không tìm thấy danh mục
+        }
+    }
+
     // Cập nhật danh mục
     public Category updateCategory(Long categoryId, String name, long[] ids) {
         // Tìm danh mục theo ID

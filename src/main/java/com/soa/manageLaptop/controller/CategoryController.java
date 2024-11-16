@@ -43,4 +43,15 @@ public class CategoryController {
     public Category getCategory(@PathVariable Long id) {
         return categoryService.getCategoryById(id);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+        boolean isDeleted = categoryService.deleteCategory(id);
+
+        if (isDeleted) {
+            return ResponseEntity.ok().build();  // Trả về HTTP 200 OK nếu xóa thành công
+        } else {
+            return ResponseEntity.status(404).body("Danh mục không tồn tại");  // Trả về HTTP 404 nếu không tìm thấy danh mục
+        }
+    }
 }
