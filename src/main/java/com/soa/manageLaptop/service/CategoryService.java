@@ -56,4 +56,31 @@ public class CategoryService {
         // Lưu danh mục với các sản phẩm đã cập nhật
         return categoryRepository.save(category);
     }
+
+    public Category updateCategory(Long categoryId, String name, long[] ids) {
+        // Tìm danh mục theo ID
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+        if (!optionalCategory.isPresent()) {
+            return null; // Nếu danh mục không tồn tại
+        }
+
+        Category category = optionalCategory.get();
+        category.setName(name);
+
+        // Tìm danh sách các sản phẩm cần gắn vào danh mục
+        List<Product> products = productRepository.findByIdIn(Arrays.stream(ids).boxed().collect(Collectors.toList()));
+
+        // Cập nhật sản phẩm trong danh mục
+        category.setProducts(products);
+        for (Product product : products) {
+            product.setCategory(category);
+            productRepository.save(product);
+        }
+
+        return categoryRepository.save(category); // Lưu lại danh mục đã cập nhật
+    }
+
+    public Category getCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId).get();
+    }
 }

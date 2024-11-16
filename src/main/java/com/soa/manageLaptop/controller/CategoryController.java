@@ -26,4 +26,18 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.saveCategory(categoryRequest.getName(), categoryRequest.getIds()), HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody CategoryRequest categoryRequest) {
+        Category updatedCategory = categoryService.updateCategory(id, categoryRequest.getName(), categoryRequest.getIds());
+        if (updatedCategory != null) {
+            return ResponseEntity.ok(updatedCategory);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Nếu danh mục không tồn tại
+    }
+
+    @GetMapping("/{id}")
+    public Category getCategory(@PathVariable Long id) {
+        return categoryService.getCategoryById(id);
+    }
+
 }

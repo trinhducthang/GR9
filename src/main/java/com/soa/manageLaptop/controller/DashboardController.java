@@ -28,4 +28,9 @@ public class DashboardController {
 
         return "dashboard"; // Trả về trang dashboard.html
     }
+
+    @GetMapping("/dashboard/categories")
+    public String getCategories(Model model) {
+        return "category";
+    }
 }
