@@ -2,9 +2,9 @@ package com.soa.manageLaptop.controller;
 
 import com.ducthang.ManagerUsers.request.AuthenticationRequest;
 import com.ducthang.ManagerUsers.request.IntrospectRequest;
-import com.ducthang.ManagerUsers.dto.response.ApiResponse;
-import com.ducthang.ManagerUsers.dto.response.AuthenticationResponse;
-import com.ducthang.ManagerUsers.dto.response.IntrospectResponse;
+import com.soa.manageLaptop.dto.ApiResponse;
+import com.soa.manageLaptop.dto.AuthenticationResponse;
+import com.soa.manageLaptop.dto.IntrospectResponse;
 import com.ducthang.ManagerUsers.request.LogoutRequest;
 import com.nimbusds.jose.JOSEException;
 import com.soa.manageLaptop.service.AuthenticationService;

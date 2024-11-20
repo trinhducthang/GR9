@@ -33,4 +33,14 @@ public class DashboardController {
     public String getCategories(Model model) {
         return "category";
     }
+
+    @GetMapping("/")
+    public String index(Model model) {
+        return "HomeShop";
+    }
+
+    @GetMapping("/register")
+    public String register(Model model) {
+        return "register";
+    }
 }

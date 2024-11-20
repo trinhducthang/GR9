@@ -1,4 +1,4 @@
-package com.ducthang.ManagerUsers.dto.response;
+package com.soa.manageLaptop.dto;
 
 
 import lombok.*;

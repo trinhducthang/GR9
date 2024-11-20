@@ -1,4 +1,4 @@
-package com.soa.manageLaptop.dto.response.request;
+package com.soa.manageLaptop.dto.request;
 
 public class CategoryRequest {
     private String name;

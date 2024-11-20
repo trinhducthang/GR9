@@ -18,6 +18,9 @@ public class UserService {
     private final UserRepository userRepository;
 
     public void registerUser(User user) {
+        if(!checkOverlap(user.getUsername(), user.getEmail(), user.getPhone())){
+            throw new RuntimeException("User already exists");
+        }
         user.setRole(Role.USER);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -30,6 +33,10 @@ public class UserService {
 
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    public boolean checkOverlap(String userName, String email, String phone){
+        return !userRepository.existsByEmailOrUsernameOrPhone(email, userName, phone);
     }
 }
 

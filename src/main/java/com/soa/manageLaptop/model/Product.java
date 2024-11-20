@@ -20,6 +20,8 @@ public class Product {
     private Long id;
     private String name;
     private String model;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
     private double price;
     private String imageUrl;

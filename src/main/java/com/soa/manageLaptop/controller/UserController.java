@@ -17,8 +17,13 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
-        userService.registerUser(user);
-        return ResponseEntity.ok("User registered successfully");
+        try {
+            userService.registerUser(user);
+            return ResponseEntity.ok("User registered successfully");
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/findAll")
