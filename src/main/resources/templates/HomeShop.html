@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Shop</title>
     <style>
+        /* Các style đã có */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -125,13 +126,51 @@
             background-color: #ddd;
             cursor: not-allowed;
         }
-    </style>
+        /* Thêm style cho ô tìm kiếm và lọc */
+        /* Cập nhật style cho ô tìm kiếm và ô lọc */
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
 
+        .filters input {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 30%; /* Giảm chiều rộng */
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .filters input:focus {
+            border-color: #ff5733;
+            outline: none;
+        }
+
+
+        .filters input:last-child {
+            margin-right: 0;
+        }
+
+    </style>
 </head>
 <body>
 <header>
     <h1>Welcome to the Product Shop</h1>
 </header>
+
+<div class="filters">
+    <input type="text" id="search" placeholder="Tìm kiếm sản phẩm theo tên" oninput="filterProducts()">
+    <div>
+        <input type="number" id="min-price" placeholder="Giá tối thiểu" oninput="filterProducts()">
+        <input type="number" id="max-price" placeholder="Giá tối đa" oninput="filterProducts()">
+    </div>
+</div>
 
 <div id="product-list" class="product-list">
     <!-- Products will be dynamically loaded here -->
@@ -144,13 +183,33 @@
 <script>
     let currentPage = 0;
     const pageSize = 10;
+    let searchQuery = '';
+    let minPrice = 0;
+    let maxPrice = 10000;
 
     document.addEventListener('DOMContentLoaded', function() {
         fetchProducts(currentPage);
     });
 
+    // Lọc theo tìm kiếm và giá tiền
+    function filterProducts() {
+        searchQuery = document.getElementById('search').value;
+        minPrice = parseFloat(document.getElementById('min-price').value) || 0;
+        maxPrice = parseFloat(document.getElementById('max-price').value) || 10000;
+
+        fetchProducts(currentPage);
+    }
+
+    // Áp dụng bộ lọc (Chỉ lọc khi thay đổi giá)
+    function applyFilters() {
+        fetchProducts(currentPage);
+    }
+
     function fetchProducts(page) {
-        fetch(`http://localhost:8080/api/products/products?page=${page}&size=${pageSize}`)
+        // Kiểm tra nếu người dùng nhập giá tiền hay không
+        const url = `http://localhost:8080/api/products/products?page=${page}&size=${pageSize}&search=${searchQuery}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
+
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 displayProducts(data.content);  // `data.content` for the product list
@@ -158,7 +217,6 @@
             })
             .catch(error => console.error('Error fetching products:', error));
     }
-
 
     function displayPagination(totalPages, currentPage) {
         const pagination = document.getElementById('pagination');
@@ -210,7 +268,6 @@
             productCard.innerHTML = `
             <img src="${product.imageUrl}" alt="${product.name}">
             <h2 title="${product.name}">${productName}</h2>
-<!--            <p>${product.description}</p>-->
             <div class="price">$${product.price}</div>
             <button class="btn-buy">Buy Now</button>
         `;

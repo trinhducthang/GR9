@@ -23,10 +23,15 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public Page<Product> getAllProducts(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return productService.getAllProducts(pageable);
+    public Page<Product> getProducts(
+            @RequestParam(defaultValue = "") String search, // Tên sản phẩm (mặc định là rỗng)
+            @RequestParam(defaultValue = "0") double minPrice, // Giá min (mặc định là 0)
+            @RequestParam(defaultValue = "10000") double maxPrice, // Giá max (mặc định là 10000)
+            @RequestParam(defaultValue = "0") int page, // Trang hiện tại (mặc định là 0)
+            @RequestParam(defaultValue = "10") int size // Kích thước trang (mặc định là 10)
+    ) {
+        // Gọi service để lấy sản phẩm với các tham số
+        return productService.getProducts(search, minPrice, maxPrice, page, size);
     }
 
     @GetMapping("/{id}")
@@ -48,5 +53,10 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+    }
+
+    @GetMapping("/filter")
+    public List<Product> filterProducts(@RequestParam double minPrice, @RequestParam double maxPrice) {
+        return productService.filterProductsByPrice(minPrice, maxPrice);
     }
 }

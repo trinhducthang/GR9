@@ -43,4 +43,14 @@ public class DashboardController {
     public String register(Model model) {
         return "register";
     }
+
+    @GetMapping("/login")
+    public String login(Model model) {
+        return "login";
+    }
+
+    @GetMapping("/log-out")
+    public String logout(Model model) {
+        return "logout";
+    }
 }

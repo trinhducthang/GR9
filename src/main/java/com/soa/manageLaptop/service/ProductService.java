@@ -4,6 +4,7 @@ import com.soa.manageLaptop.model.Product;
 import com.soa.manageLaptop.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,15 @@ public class ProductService {
 
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
+    }
+
+    public List<Product> filterProductsByPrice(double minPrice, double maxPrice) {
+        return productRepository.findByPriceBetween(minPrice, maxPrice);
+    }
+
+    public Page<Product> getProducts(String search, double minPrice, double maxPrice, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findByNameContainingAndPriceBetween(search, minPrice, maxPrice, pageable);
     }
 }
 
