@@ -187,6 +187,13 @@
     let minPrice = 0;
     let maxPrice = 10000;
 
+    let debounceTimeout;
+
+    function debounce(func, delay) {
+        clearTimeout(debounceTimeout);  // Hủy bỏ các lần gọi trước đó
+        debounceTimeout = setTimeout(func, delay);  // Gọi func sau delay (500ms)
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         fetchProducts(currentPage);
     });
@@ -197,7 +204,9 @@
         minPrice = parseFloat(document.getElementById('min-price').value) || 0;
         maxPrice = parseFloat(document.getElementById('max-price').value) || 10000;
 
-        fetchProducts(currentPage);
+        debounce(function() {
+            fetchProducts(currentPage);
+        }, 500);
     }
 
     // Áp dụng bộ lọc (Chỉ lọc khi thay đổi giá)
