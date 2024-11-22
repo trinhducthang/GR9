@@ -198,20 +198,26 @@
             const month = 11;
             const year = 2024;
 
+            // Fetch số lượng đơn hàng theo ngày
             const ordersCountByDayResponse = await fetch(`/api/orders/daily-count?month=${month}&year=${year}`);
             const ordersCountByDay = await ordersCountByDayResponse.json();
 
+            // Chuyển đổi keys (ngày) thành mảng và sắp xếp theo thứ tự ngày tháng
+            const sortedDates = Object.keys(ordersCountByDay).sort((a, b) => new Date(a) - new Date(b));
+
+            // Dữ liệu biểu đồ
             const chartData = {
-                labels: Object.keys(ordersCountByDay),
+                labels: sortedDates,  // Các nhãn được sắp xếp theo thứ tự ngày tháng
                 datasets: [{
                     label: 'Số lượng đơn hàng',
-                    data: Object.values(ordersCountByDay),
+                    data: sortedDates.map(date => ordersCountByDay[date]),
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     fill: true,
                 }]
             };
 
+            // Vẽ biểu đồ
             const ctx = document.getElementById('ordersChart').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
@@ -219,6 +225,7 @@
                 options: { responsive: true }
             });
 
+            // Fetch thông tin đơn hàng để hiển thị trong bảng
             const ordersResponse = await fetch('/api/orders');
             const orders = await ordersResponse.json();
             const ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
@@ -226,18 +233,19 @@
             orders.forEach(order => {
                 const row = ordersTable.insertRow();
                 row.innerHTML = `
-                    <td>${order.id}</td>
-                    <td>${order.user?.name || 'N/A'}</td>
-                    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-                    <td>${order.status}</td>
-                    <td>${order.totalPrice}</td>
-                `;
+                <td>${order.id}</td>
+                <td>${order.user?.name || 'N/A'}</td>
+                <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                <td>${order.status}</td>
+                <td>${order.totalPrice}</td>
+            `;
             });
 
         } catch (error) {
             console.error('Lỗi khi fetch dữ liệu:', error);
         }
     }
+g
 
     async function fetchProducts() {
         try {
