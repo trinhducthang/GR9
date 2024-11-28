@@ -20,6 +20,28 @@
             text-align: center;
         }
 
+        .header-buttons {
+            /*display: flex;*/
+            gap: 10px;
+            text-align: center/* Add space between buttons */
+        }
+
+        .header-buttons button {
+            background-color: #ff5733;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .header-buttons button:hover {
+            background-color: #ff3d1a;
+        }
+
         .product-list {
             display: grid;
             grid-template-columns: repeat(5, 1fr);  /* 5 sản phẩm mỗi hàng */
@@ -162,6 +184,10 @@
 <body>
 <header>
     <h1>Welcome to the Product Shop</h1>
+    <div class="header-buttons">
+        <button onclick="window.location.href='login'">Login</button>
+        <button onclick="window.location.href='register'">Register</button>
+    </div>
 </header>
 
 <div class="filters">
@@ -185,7 +211,7 @@
     const pageSize = 10;
     let searchQuery = '';
     let minPrice = 0;
-    let maxPrice = 10000;
+    let maxPrice = 10000000;
 
     let debounceTimeout;
 
