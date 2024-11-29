@@ -53,4 +53,14 @@ public class DashboardController {
     public String logout(Model model) {
         return "logout";
     }
+
+    @GetMapping("/home")
+    public String home(Model model) {
+        return "home";
+    }
+
+    @GetMapping("/checkout")
+    public String checkout(Model model) {
+        return "checkout";
+    }
 }
