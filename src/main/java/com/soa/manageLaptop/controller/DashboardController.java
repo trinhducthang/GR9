@@ -63,4 +63,14 @@ public class DashboardController {
     public String checkout(Model model) {
         return "checkout";
     }
+
+    @GetMapping("/payment-failure")
+    public String paymentFailure(Model model) {
+        return "payment-failure";
+    }
+
+    @GetMapping("/payment-success")
+    public String paymentSuccess(Model model) {
+        return "payment-success";
+    }
 }
