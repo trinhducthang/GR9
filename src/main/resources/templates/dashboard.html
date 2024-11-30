@@ -329,6 +329,14 @@
         await fetch(`/api/products/${id}`, { method: 'DELETE' });
         fetchProducts();
     }
+
+    function check(){
+        const username = localStorage.getItem('username');
+        if (username !== 'admin' && username !== null) {
+            window.location.href = '/home';
+        }
+    }
+    check();
 </script>
 
 </body>

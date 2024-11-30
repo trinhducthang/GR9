@@ -244,7 +244,6 @@
     function checkout() {
         let userId = localStorage.getItem('user_id');
         const productIds = getCart();  // Lấy danh sách sản phẩm trong giỏ hàng
-        alert(userId)
         if (!userId || productIds.length === 0) {
             alert("Please log in and add products to your cart!");
             return;
@@ -267,6 +266,7 @@
             .then(data => {
                 alert("Order created successfully!");
                 localStorage.removeItem('cart');  // Xóa giỏ hàng sau khi thanh toán thành công
+                window.location.href='/myOrder'
             })
             .catch(error => {
                 console.error('Error:', error);
