@@ -16,7 +16,7 @@ import java.util.*;
 public class PaymentService {
     private final VNPAYConfig vnPayConfig;
 
-    public static String bankNumber_static;
+    public static String orderId;
 
     public static BigDecimal amount_static;
 
@@ -30,7 +30,7 @@ public class PaymentService {
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
         String bankNumber = request.getParameter("bankNumber");
         vnpParamsMap.put("vnp_OrderInfo",bankNumber);
-        bankNumber_static = bankNumber;
+        orderId = bankNumber;
         if (bankCode != null && !bankCode.isEmpty()) {
             vnpParamsMap.put("vnp_BankCode", bankCode);
         }

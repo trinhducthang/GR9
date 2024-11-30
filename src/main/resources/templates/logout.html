@@ -63,6 +63,7 @@
                     // Xóa token và thông tin người dùng trong localStorage
                     localStorage.removeItem('jwtToken');
                     localStorage.removeItem('username');
+                    localStorage.removeItem('user_id')
                     window.location.href = '/login'; // Sau khi đăng xuất thành công, chuyển hướng về trang login
                 } else {
                     alert('Đăng xuất không thành công.');

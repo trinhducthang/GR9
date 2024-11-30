@@ -205,6 +205,7 @@
 <header>
     <h1>Welcome to the Product Shop</h1>
     <div class="header-buttons">
+        <button onclick="window.location.href='log-out'">Đăng xuất</button>
     </div>
 </header>
 
@@ -399,6 +400,29 @@
                 alert("Error creating order.");
             });
     }
+
+    function getUserId(){
+        const username = localStorage.getItem('username');
+        fetch(`/api/users/${username}`)
+            .then(response => {
+                // Kiểm tra xem phản hồi có thành công hay không
+                if (response.ok) {
+                    return response.text();  // Lấy dữ liệu dạng văn bản
+                }
+                throw new Error('Failed to fetch data');
+            })
+            .then(id => {
+                // Lưu id vào localStorage
+                localStorage.setItem('user_id', id);
+                console.log('User ID saved:', id);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    getUserId()
+
 
 </script>
 </body>

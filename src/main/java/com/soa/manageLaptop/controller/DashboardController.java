@@ -73,4 +73,9 @@ public class DashboardController {
     public String paymentSuccess(Model model) {
         return "payment-success";
     }
+
+    @GetMapping("/myOrder")
+    public String myOrder(Model model) {
+        return "myOrder";
+    }
 }

@@ -38,5 +38,12 @@ public class UserService {
     public boolean checkOverlap(String userName, String email, String phone){
         return !userRepository.existsByEmailOrUsernameOrPhone(email, userName, phone);
     }
+
+    public String getIdByUsername(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+
+        User userObj = user.get();
+        return String.valueOf(userObj.getId());
+    }
 }
 

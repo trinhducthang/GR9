@@ -239,21 +239,39 @@
         displayCartItems();  // Cập nhật lại giỏ hàng
     }
 
-    // Xử lý thanh toán
-    function checkout() {
-        let cart = getCart();
 
-        if (cart.length === 0) {
-            alert('Giỏ hàng của bạn đang trống!');
+
+    function checkout() {
+        let userId = localStorage.getItem('user_id');
+        const productIds = getCart();  // Lấy danh sách sản phẩm trong giỏ hàng
+        alert(userId)
+        if (!userId || productIds.length === 0) {
+            alert("Please log in and add products to your cart!");
             return;
         }
 
-        // Thực hiện thanh toán (ví dụ gửi yêu cầu tới server)
-        alert('Thanh toán thành công!');
+        // Gửi yêu cầu tạo đơn hàng tới server
+        const orderRequest = {
+            userId: userId,
+            productIds: productIds
+        };
 
-        // Sau khi thanh toán thành công, xóa giỏ hàng
-        localStorage.removeItem('cart');
-        window.location.href = '/';  // Quay về trang chủ hoặc trang cảm ơn
+        fetch('http://localhost:8080/api/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderRequest),
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert("Order created successfully!");
+                localStorage.removeItem('cart');  // Xóa giỏ hàng sau khi thanh toán thành công
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Error creating order.");
+            });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
