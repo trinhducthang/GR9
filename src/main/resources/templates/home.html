@@ -159,7 +159,10 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
-
+        .thangcho{
+            display: flex;
+            gap: 10px;
+        }
         .filters input {
             padding: 8px 12px;
             border-radius: 5px;
@@ -226,8 +229,11 @@
         <input type="number" id="min-price" placeholder="Giá tối thiểu" oninput="filterProducts()">
         <input type="number" id="max-price" placeholder="Giá tối đa" oninput="filterProducts()">
     </div>
-    <button id="order-button" onclick="window.location.href='/myOrder'">Đơn hàng của tôi</button>
-    <button id="checkout-button" onclick="window.location.href='/checkout'">Thanh toán (0)</button>
+    <div class="thangcho">
+        <button id="order-button" onclick="window.location.href='/myOrder'">Đơn hàng của tôi</button>
+        <button id="checkout-button" onclick="window.location.href='/checkout'">Thanh toán (0)</button>
+    </div>
+
 
 
 </div>
