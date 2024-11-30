@@ -41,9 +41,6 @@
             margin-bottom: 10px;
             border-radius: 8px;
             background-color: #fff;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
         .order-item h2 {
@@ -56,7 +53,6 @@
         }
 
         button {
-            align-self: flex-start;
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
@@ -70,10 +66,18 @@
             background-color: #45a049;
         }
 
+        .product {
+            border-top: 1px solid #ddd;
+            padding: 10px;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         .product-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
         }
 
         .product img {
@@ -82,9 +86,36 @@
             object-fit: cover;
         }
 
-        .product-info {
-            flex-grow: 1;
-            padding-left: 10px;
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-table th,
+        .product-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .table-data {
+            flex: 1;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .order-list-image {
+            max-width: 50px;
+            max-height: 50px;
+            object-fit: cover;
+        }
+        .product-container{
+            padding: 10px 0px;
         }
     </style>
 </head>
@@ -92,13 +123,13 @@
 <div class="container">
     <h1>My Orders</h1>
     <div id="order-list" class="order-list">
-        <!-- Các đơn hàng sẽ được hiển thị tại đây -->
+        
     </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const userId = localStorage.getItem('user_id'); // Giả sử đã có user_id trong localStorage
+        const userId = localStorage.getItem('user_id'); // Lấy user_id từ localStorage
         const orderListContainer = document.getElementById('order-list');
 
         if (userId) {
@@ -107,13 +138,16 @@
             orderListContainer.innerHTML = '<p>User not logged in</p>';
         }
 
-        // Lấy danh sách đơn hàng của người dùng
+        // Lấy danh sách đơn hàng từ API
         function fetchOrders(userId) {
             fetch(`api/orders/byUserId?id=${userId}`)
                 .then(response => response.json())
                 .then(orders => {
-                    console.log('Fetched Orders:', orders); // Kiểm tra xem có dữ liệu đơn hàng
-                    displayOrders(orders);
+                    if (orders.length > 0) {
+                        displayOrders(orders);
+                    } else {
+                        orderListContainer.innerHTML = '<p>No orders found.</p>';
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching orders:', error);
@@ -123,36 +157,91 @@
 
         // Hiển thị danh sách đơn hàng
         function displayOrders(orders) {
-            if (orders.length === 0) {
-                orderListContainer.innerHTML = '<p>No orders found.</p>';
-                return;
-            }
-
             orders.forEach(order => {
                 const orderItem = document.createElement('div');
                 orderItem.classList.add('order-item');
+                orderItem.id = `order-${order.id}`;
+
+                // Thêm thông tin đơn hàng
                 orderItem.innerHTML = `
-                    <h2>Order #${order.id}</h2>
-                    <p><strong>Status:</strong> ${order.status}</p>
-                    <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
-                    <p><strong>Total Price:</strong> $${order.totalPrice}</p>
-                `;
+            <h2>Order #${order.id}</h2>
+            <p><strong>Status:</strong> ${order.status}</p>
+            <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
+            <p><strong>Total Price:</strong> $${order.totalPrice}</p>
+        `;
 
                 // Hiển thị sản phẩm trong đơn hàng
-                const productCounts = countProductOccurrences(order.productIds);
                 const productContainer = document.createElement('div');
-                productContainer.classList.add('product-container'); // Thêm class để dễ dàng quản lý
+                productContainer.classList.add('product-container');
 
-                console.log('Product Counts:', productCounts); // Kiểm tra dữ liệu sản phẩm được đếm
+                // Đếm số lần xuất hiện của từng sản phẩm
+                const productCounts = countProductOccurrences(order.productIds);
                 productCounts.forEach(([productId, count]) => {
-                    console.log(`Fetching product with ID: ${productId}`); // Kiểm tra khi nào gọi API sản phẩm
                     fetchProductById(productId, count, productContainer);
                 });
 
+                // Thêm container sản phẩm vào trước nút "Pay Now"
                 orderItem.appendChild(productContainer);
-                orderItem.innerHTML += `<button onclick="handlePayment(${order.id})">Pay Now</button>`;
+
+                // Thêm nút "Pay Now"
+                const payNowButton = document.createElement('button');
+                payNowButton.textContent = 'Pay Now';
+                payNowButton.onclick = () => handlePayment(order.id);
+                orderItem.appendChild(payNowButton);
+
+                // Thêm đơn hàng vào danh sách
                 orderListContainer.appendChild(orderItem);
             });
+        }
+
+
+        // Lấy thông tin sản phẩm từ API và hiển thị
+        function fetchProductById(productId, count, productContainer) {
+            fetch(`api/products/${productId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch product');
+                    }
+                    return response.json();
+                })
+                .then(product => {
+                    // Kiểm tra nếu chưa có bảng, tạo mới
+                    if (!productContainer.querySelector('table')) {
+                        const table = document.createElement('table');
+                        table.classList.add('product-table');
+                        table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Image</th>
+                            <th>Model</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
+                        productContainer.appendChild(table);
+                    }
+
+                    // Thêm sản phẩm vào body của bảng
+                    const tbody = productContainer.querySelector('table tbody');
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td class="table-data">${product.name}</td>
+                <td class="table-data">
+                    <img src="${product.imageUrl}" alt="${product.name}" class="order-list-image"/>
+                </td>
+                <td class="table-data">${product.model}</td>
+                <td class="table-data">$${product.price}</td>
+                <td class="table-data">${count}</td>
+            `;
+                    tbody.appendChild(row);
+                })
+                .catch(error => {
+                    console.error('Error fetching product:', error);
+                    productContainer.innerHTML = '<p>Failed to load product details.</p>';
+                });
         }
 
         // Đếm số lần xuất hiện của từng sản phẩm
@@ -166,39 +255,10 @@
             return [...productCountMap.entries()];
         }
 
-        // Lấy thông tin sản phẩm từ API và hiển thị
-        function fetchProductById(productId, count, productContainer) {
-            fetch(`api/products/${productId}`)
-                .then(response => response.json())
-                .then(product => {
-                    console.log('Product:', product); // Kiểm tra dữ liệu trả về từ API sản phẩm
-                    const productDiv = document.createElement('div');
-                    productDiv.classList.add('product'); // Mỗi sản phẩm có class riêng
-
-                    productDiv.innerHTML = `
-                    <div class="product-info">
-                        <h3>${product.name}</h3>
-                        <p>Model: ${product.model}</p>
-                        <p>Description: ${product.description}</p>
-                        <p>Price: $${product.price}</p>
-                        <p>Quantity: ${count}</p>
-                    </div>
-                    <img src="${product.imageUrl}" alt="${product.name}">
-                `;
-
-                    // Thêm sản phẩm vào container
-                    productContainer.appendChild(productDiv);
-                })
-                .catch(error => {
-                    console.error('Error fetching product:', error);
-                });
-        }
-
-        // Xử lý thanh toán cho một đơn hàng
-        window.handlePayment = function(orderId) {
-            alert(`Payment for Order #${orderId} is being processed...`);
-            // Thực hiện thanh toán qua API hoặc xử lý backend ở đây
-            // Ví dụ: fetch(`http://yourapiurl.com/payOrder?id=${orderId}`)
+        // Xử lý thanh toán
+        window.handlePayment = function (orderId) {
+            alert(`Processing payment for Order #${orderId}`);
+            // Thực hiện thanh toán tại đây
         };
     });
 </script>
