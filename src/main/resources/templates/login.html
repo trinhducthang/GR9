@@ -54,7 +54,7 @@
 
     button[type="submit"],
     .google-login-btn {
-        background-color: #007bff;
+        background-color: #0866ff;
         color: #fff;
         padding: 12px 20px;
         border: none;
@@ -109,10 +109,14 @@
             <label for="password">Mật khẩu:</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit">Đăng nhập</button>
-        <button type="button" class="google-login-btn" onclick="window.location.href='/forgot-password'">Quên mật khẩu</button>
+        <button type="submit" style="font-weight: bold ">Đăng nhập</button>
         <div class="signup-link">
-            <p>Chưa có tài khoản? <a href="/register">Đăng ký ngay</a></p>
+            <p> <a href="/forgot-password">Quên mật khẩu?</a></p>
+        </div>
+        <hr></hr>
+        <div style="padding-left: 25%; padding-right: 25%">
+            <button  type="button" style="background-color: #42b72a" class="google-login-btn" onclick="window.location.href='/register'">Tạo tài khoản mới</button>
+
         </div>
     </form>
 </div>

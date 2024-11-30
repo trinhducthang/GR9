@@ -217,7 +217,7 @@
 </head>
 <body>
 <header>
-    <h1>Welcome to the Product Shop</h1>
+    <h1>Laptop ABC xin chào quý khách</h1>
     <div class="header-buttons">
         <button onclick="window.location.href='log-out'">Đăng xuất</button>
     </div>
@@ -299,7 +299,7 @@
 
         // Nút Previous
         const prevButton = document.createElement('button');
-        prevButton.innerText = 'Previous';
+        prevButton.innerText = 'Trang trước';
         prevButton.disabled = currentPage === 0; // Vô hiệu hóa nếu đang ở trang đầu
         prevButton.onclick = () => {
             if (currentPage > 0) {
@@ -319,7 +319,7 @@
 
         // Nút Next
         const nextButton = document.createElement('button');
-        nextButton.innerText = 'Next';
+        nextButton.innerText = 'Trang sau';
         nextButton.disabled = currentPage === totalPages - 1; // Vô hiệu hóa nếu đang ở trang cuối
         nextButton.onclick = () => {
             if (currentPage < totalPages - 1) {
@@ -343,7 +343,7 @@
             productCard.innerHTML = `
             <img src="${product.imageUrl}" alt="${product.name}">
             <h2 title="${product.name}">${productName}</h2>
-            <div class="price">${product.price} VND</div>
+            <div class="price">${formatPrice(product.price)} VNĐ</div>
             <button class="btn-add-to-cart" onclick="addToCart(${product.id})">Thêm vào giỏ hàng</button>
         `;
 
@@ -376,7 +376,7 @@
         const cart = getCart();
         const cartCount = cart.length;  // Tính tổng số sản phẩm trong giỏ hàng (số phần tử trong mảng)
         const checkoutButton = document.getElementById('checkout-button');
-        checkoutButton.innerHTML = `Checkout (${cartCount})`;  // Cập nhật số lượng vào nút Checkout
+        checkoutButton.innerHTML = `Giỏ hàng (${cartCount})`;  // Cập nhật số lượng vào nút Checkout
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -441,6 +441,9 @@
 
     getUserId()
 
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 
 </script>
 </body>

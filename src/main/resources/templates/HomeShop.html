@@ -183,10 +183,10 @@
 </head>
 <body>
 <header>
-    <h1>Welcome to the Product Shop</h1>
+    <h1>Laptop ABC xin chào quý khách</h1>
     <div class="header-buttons">
-        <button onclick="window.location.href='login'">Login</button>
-        <button onclick="window.location.href='register'">Register</button>
+        <button onclick="window.location.href='login'">Đăng nhập</button>
+        <button onclick="window.location.href='register'">Đăng ký</button>
     </div>
 </header>
 
@@ -259,7 +259,7 @@
 
         // Nút Previous
         const prevButton = document.createElement('button');
-        prevButton.innerText = 'Previous';
+        prevButton.innerText = 'Trang trước';
         prevButton.disabled = currentPage === 0; // Vô hiệu hóa nếu đang ở trang đầu
         prevButton.onclick = () => {
             if (currentPage > 0) {
@@ -279,7 +279,7 @@
 
         // Nút Next
         const nextButton = document.createElement('button');
-        nextButton.innerText = 'Next';
+        nextButton.innerText = 'Trang sau';
         nextButton.disabled = currentPage === totalPages - 1; // Vô hiệu hóa nếu đang ở trang cuối
         nextButton.onclick = () => {
             if (currentPage < totalPages - 1) {
@@ -303,8 +303,8 @@
             productCard.innerHTML = `
             <img src="${product.imageUrl}" alt="${product.name}">
             <h2 title="${product.name}">${productName}</h2>
-            <div class="price">${product.price} VND</div>
-            <button class="btn-buy">Buy Now</button>
+            <div class="price">${formatPrice(product.price)} VNĐ</div>
+            <button class="btn-buy" onclick="muahang()" >Mua ngay</button>
         `;
 
             productList.appendChild(productCard);
@@ -353,6 +353,15 @@
 
     // Gọi hàm kiểm tra token và chuyển hướng khi tải trang
     checkTokenAndRedirect();
+
+    function muahang(){
+        window.alert("Quý khách vui lòng đăng nhập để mua hàng!")
+        window.location.href='/login';
+    }
+
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 </script>
 </body>
 </html>
