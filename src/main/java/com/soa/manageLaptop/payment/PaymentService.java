@@ -1,7 +1,9 @@
 package com.soa.manageLaptop.payment;
 
 import com.soa.manageLaptop.configuration.VNPAYConfig;
+import com.soa.manageLaptop.model.Order;
 import com.soa.manageLaptop.model.VNPayUtil;
+import com.soa.manageLaptop.repository.OrderRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,8 @@ public class PaymentService {
     public static String orderId;
 
     public static BigDecimal amount_static;
+
+    private final OrderRepository orderRepository;
 
 
 
@@ -48,8 +52,11 @@ public class PaymentService {
                 .paymentUrl(paymentUrl).build();
     }
 
-    public PaymentDTO.VNPayResponse payCallbackHandler(HttpServletRequest request) {
 
+    public PaymentDTO.VNPayResponse payCallbackHandler(HttpServletRequest request) {
+        Order order = orderRepository.getById(Long.valueOf(orderId));
+        order.setStatus("Đã thanh toán");
+        orderRepository.save(order);
         return new PaymentDTO.VNPayResponse(String.valueOf(HttpStatus.OK.value()),"success","OK");
     }
 

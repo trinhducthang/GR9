@@ -167,7 +167,7 @@
             <h2>Đơn hàng #${order.id}</h2>
             <p><strong>Trạng thái</strong> ${order.status}</p>
             <p><strong>Ngày đặt hàng:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
-            <p><strong>Tổng tiền:</strong> $${order.totalPrice}</p>
+            <p><strong>Tổng tiền:</strong> ${order.totalPrice} VND</p>
         `;
 
                 // Hiển thị sản phẩm trong đơn hàng
@@ -184,10 +184,13 @@
                 orderItem.appendChild(productContainer);
 
                 // Thêm nút "Pay Now"
-                const payNowButton = document.createElement('button');
-                payNowButton.textContent = 'Thanh toán ngay';
-                payNowButton.onclick = () => handlePayment(order.id);
-                orderItem.appendChild(payNowButton);
+                if (order.status === 'PENDING') {
+                    const payNowButton = document.createElement('button');
+                    payNowButton.textContent = 'Thanh toán ngay';
+                    payNowButton.onclick = () => handlePayment(order.id, order.totalPrice);
+                    orderItem.appendChild(payNowButton);
+                }
+
 
                 // Thêm đơn hàng vào danh sách
                 orderListContainer.appendChild(orderItem);
@@ -256,9 +259,21 @@
         }
 
         // Xử lý thanh toán
-        window.handlePayment = function (orderId) {
-            alert(`Processing payment for Order #${orderId}`);
-            // Thực hiện thanh toán tại đây
+        window.handlePayment = async function (orderId, totalPrice ) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/v1/vn-pay?amount=${totalPrice}&bankNumber=${orderId}`);
+                const data = await response.json();
+
+                if (response.ok && data.result.code === 'ok') {
+                    const paymentUrl = data.result.paymentUrl;
+                    // Chuyển hướng người dùng đến trang thanh toán của VNPAY
+                    window.location.href = paymentUrl;
+                } else {
+                    alert('Không thể thực hiện giao dịch: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Có lỗi xảy ra khi nạp tiền:', error);
+            }
         };
     });
 </script>

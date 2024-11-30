@@ -195,7 +195,18 @@
         #checkout-button:hover {
             background-color: #ff3d1a;
         }
-
+        #order-button {
+            background-color: #ff5733;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            position: relative;  /* Để đặt số lượng lên trên nút */
+            transition: background-color 0.3s;
+        }
 
 
 
@@ -215,6 +226,7 @@
         <input type="number" id="min-price" placeholder="Giá tối thiểu" oninput="filterProducts()">
         <input type="number" id="max-price" placeholder="Giá tối đa" oninput="filterProducts()">
     </div>
+    <button id="order-button" onclick="window.location.href='/myOrder'">Đơn hàng của tôi</button>
     <button id="checkout-button" onclick="window.location.href='/checkout'">Thanh toán (0)</button>
 
 
