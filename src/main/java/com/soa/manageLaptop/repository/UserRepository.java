@@ -11,4 +11,5 @@ public interface UserRepository extends JpaRepository<com.soa.manageLaptop.model
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
     boolean existsByEmailOrUsernameOrPhone(String email, String username, String phone);
+    User getUserByUsername(String username);
 }

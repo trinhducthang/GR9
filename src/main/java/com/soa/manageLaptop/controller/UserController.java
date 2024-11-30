@@ -35,5 +35,26 @@ public class UserController {
     public String findIdByUsername(@PathVariable String username) {
         return userService.getIdByUsername(username);
     }
+
+    @GetMapping("/forgotPassword/{username}")
+    public String forgotPassword(@PathVariable String username) {
+        try{
+            return userService.getEmailByUsername(username);
+        }
+        catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    @PutMapping("/updatePassword/{username}")
+    public ResponseEntity<String> updatePassword(@PathVariable String username, @RequestParam String password) {
+        try{
+            userService.updatePassword(username, password);
+            return ResponseEntity.ok("Password updated successfully");
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 

@@ -78,4 +78,9 @@ public class DashboardController {
     public String myOrder(Model model) {
         return "myOrder";
     }
+
+    @GetMapping("/forgot-password")
+    public String forgotPassword(Model model) {
+        return "forgetPassword";
+    }
 }

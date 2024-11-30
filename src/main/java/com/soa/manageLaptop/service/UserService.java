@@ -45,5 +45,31 @@ public class UserService {
         User userObj = user.get();
         return String.valueOf(userObj.getId());
     }
+
+    public String getEmailByUsername(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if(user.isEmpty()){
+            throw new RuntimeException("User not found");
+        }
+        User userObj = user.get();
+        return userObj.getEmail();
+    }
+
+    public User updatePassword(String username, String newPassword) {
+        User user = userRepository.getUserByUsername(username);
+
+        // Mã hóa mật khẩu mới
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        String encodedPassword = passwordEncoder.encode(newPassword); // Mã hóa mật khẩu mới
+
+        boolean check = passwordEncoder.matches(newPassword, encodedPassword);
+        System.out.println(newPassword + ' ' + encodedPassword);
+        System.out.println(check);
+        // Cập nhật mật khẩu đã mã hóa cho người dùng
+        user.setPassword(encodedPassword);
+
+        // Lưu người dùng với mật khẩu mới đã mã hóa vào cơ sở dữ liệu
+        return userRepository.save(user);
+    }
 }
 
