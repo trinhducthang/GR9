@@ -31,13 +31,6 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public Page<Product> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable);
-    }
-
-    public List<Product> filterProductsByPrice(double minPrice, double maxPrice) {
-        return productRepository.findByPriceBetween(minPrice, maxPrice);
-    }
 
     public Page<Product> getProducts(String search, double minPrice, double maxPrice, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);

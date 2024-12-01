@@ -83,4 +83,9 @@ public class DashboardController {
     public String forgotPassword(Model model) {
         return "forgetPassword";
     }
+
+    @GetMapping("/productDetail")
+    public String productDetails(Model model) {
+        return "productDetail";
+    }
 }

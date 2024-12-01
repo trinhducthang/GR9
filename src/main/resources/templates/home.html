@@ -383,7 +383,11 @@
         products.forEach(product => {
             const productCard = document.createElement('div');
             productCard.classList.add('product-card');
-
+            productCard.onclick = function() {
+                localStorage.setItem('productId', product.id);
+                // Chuyển hướng đến trang chi tiết sản phẩm
+                window.location.href = '/productDetail'; // Chuyển hướng đến trang chi tiết sản phẩm
+            };
             // Giới hạn tên sản phẩm tối đa 20 ký tự
             const productName = product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name;
 
