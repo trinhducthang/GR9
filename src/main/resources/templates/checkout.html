@@ -132,7 +132,7 @@
     </style>
 </head>
 <body>
-
+<div><a href="/"><img style="width: 8%;position: absolute;top:0" src="https://images.vexels.com/content/157295/preview/computer-laptop-icon-495a5f.png"></a></div>
 <div class="header">
     <h1>Kiểm tra lại đơn hàng</h1>
 </div>
@@ -245,7 +245,7 @@
         let userId = localStorage.getItem('user_id');
         const productIds = getCart();  // Lấy danh sách sản phẩm trong giỏ hàng
         if (!userId || productIds.length === 0) {
-            alert("Please log in and add products to your cart!");
+            alert("Bạn chưa đăng nhập hoặc chưa có bất kì sản phẩm nào trong rỏ hàng!");
             return;
         }
 
