@@ -311,7 +311,11 @@
             <div class="price">${formatPrice(product.price)} VNĐ</div>
             <button class="btn-buy" onclick="muahang()" >Mua ngay</button>
         `;
-
+            const buyButton = productCard.querySelector('.btn-buy');
+            buyButton.onclick = function(event) {
+                event.stopPropagation();  // Ngăn việc chuyển trang khi nhấn vào nút "Mua ngay"
+                muahang(product);  // Gọi hàm "Mua ngay" và truyền thông tin sản phẩm
+            };
             productList.appendChild(productCard);
         });
     }

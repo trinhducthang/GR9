@@ -395,8 +395,13 @@
             <img src="${product.imageUrl}" alt="${product.name}">
             <h2 title="${product.name}">${productName}</h2>
             <div class="price">${formatPrice(product.price)} VNĐ</div>
-            <button class="btn-add-to-cart" onclick="addToCart(${product.id})">Thêm vào giỏ hàng</button>
+            <button class="btn-add-to-cart" onclick="">Thêm vào giỏ hàng</button>
         `;
+            const addToCartButton = productCard.querySelector('.btn-add-to-cart');
+            addToCartButton.onclick = function(event) {
+                event.stopPropagation();  // Ngừng việc chuyển trang khi nhấn vào nút "Thêm vào giỏ hàng"
+                addToCart(product.id);    // Gọi hàm addToCart và truyền ID sản phẩm vào
+            };
 
             productList.appendChild(productCard);
         });
