@@ -315,7 +315,7 @@
     function filterProducts() {
         searchQuery = document.getElementById('search').value;
         minPrice = parseFloat(document.getElementById('min-price').value) || 0;
-        maxPrice = parseFloat(document.getElementById('max-price').value) || 10000;
+        maxPrice = parseFloat(document.getElementById('max-price').value) || 100000000;
 
         debounce(function() {
             fetchProducts(currentPage);
