@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/reviews")
 public class ReviewController {
@@ -23,7 +25,7 @@ public class ReviewController {
     }
 
     @GetMapping("/{stadiumId}")
-    public Review getReview(@PathVariable Long stadiumId) {
+    public List<Review> getReview(@PathVariable Long stadiumId) {
 
         return reviewService.getByStadiumId(stadiumId);
     }
