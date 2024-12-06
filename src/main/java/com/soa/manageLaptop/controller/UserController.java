@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,6 +32,23 @@ public class UserController {
     public ResponseEntity<List<User>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }
+
+    @GetMapping("/users-order-count")
+    public ResponseEntity<List<Map<String, Object>>> getUsersWithOrderCount() {
+        List<Map<String, Object>> response = userService.findAll()
+                .stream()
+                .map(user -> {
+                    Map<String, Object> userOrderData = new HashMap<>();
+                    userOrderData.put("username", user.getUsername());
+                    userOrderData.put("email", user.getEmail());
+                    userOrderData.put("phone", user.getPhone());
+                    userOrderData.put("orderCount", user.getOrders() != null ? user.getOrders().size() : 0);
+                    return userOrderData;
+                })
+                .toList();
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping("/{username}")
     public String findIdByUsername(@PathVariable String username) {
