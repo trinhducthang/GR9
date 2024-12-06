@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xem Các Đánh Giá Sân</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        select {
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .review {
+            background-color: white;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .review p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Danh Sách Đánh Giá Của Sân</h2>
+
+<label for="stadiumSelect">Chọn Sân:</label>
+<select id="stadiumSelect"></select>
+
+<button onclick="fetchReviews()">Xem Đánh Giá</button>
+
+<div id="reviewsContainer"></div>
+
+<script>
+    // Lấy danh sách các sân và điền vào dropdown
+    function fetchStadiums() {
+        fetch('/api/stadiums/all')
+            .then(response => response.json())
+            .then(data => {
+                const stadiumSelect = document.getElementById('stadiumSelect');
+                data.forEach(stadium => {
+                    const option = document.createElement('option');
+                    option.value = stadium.id;
+                    option.textContent = stadium.name;
+                    stadiumSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching stadiums:', error));
+    }
+
+    // Lấy đánh giá của sân đã chọn
+    // Lấy đánh giá của sân đã chọn
+    function fetchReviews() {
+        const stadiumId = document.getElementById('stadiumSelect').value;
+        if (!stadiumId) {
+            alert("Vui lòng chọn sân!");
+            return;
+        }
+
+        fetch(`/api/v1/reviews/${stadiumId}`)
+            .then(response => response.json())
+            .then(data => {
+                const reviewsContainer = document.getElementById('reviewsContainer');
+                reviewsContainer.innerHTML = ''; // Xóa các đánh giá cũ
+
+                // Kiểm tra xem có đánh giá hay không và hiển thị
+                if (data && data.rating) {  // Kiểm tra nếu dữ liệu có trường rating (đánh giá)
+                    const reviewElement = document.createElement('div');
+                    reviewElement.classList.add('review');
+                    reviewElement.innerHTML = `
+                    <p><strong>Điểm Đánh Giá:</strong> ${data.rating}</p>
+                    <p><strong>Nhận Xét:</strong> ${data.comment}</p>
+                    <p><strong>Ngày Đánh Giá:</strong> ${data.date}</p>
+                    <hr>
+                `;
+                    reviewsContainer.appendChild(reviewElement);
+                } else {
+                    reviewsContainer.innerHTML = '<p>Không có đánh giá nào cho sân này.</p>';
+                }
+            })
+            .catch(error => console.error('Error fetching reviews:', error));
+    }
+
+
+    // Gọi hàm fetchStadiums khi trang tải
+    window.onload = fetchStadiums;
+</script>
+
+</body>
+</html>

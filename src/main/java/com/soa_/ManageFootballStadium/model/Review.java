@@ -1,5 +1,6 @@
 package com.soa_.ManageFootballStadium.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,8 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id")
-    private Stadium stadium;  // Sân vận động mà đánh giá này thuộc về
+    @JsonIgnore // Ngăn lặp vô hạn trong quá trình chuyển đổi đối tượng thành JSON
+    private Stadium stadium; // Sân vận động mà đánh giá này thuộc về
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

@@ -1,5 +1,6 @@
 package com.soa_.ManageFootballStadium.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,7 +26,8 @@ public class Stadium {
     private String facilities;
 
     @OneToMany(mappedBy = "stadium")
-    private List<Review> reviews;  // Danh sách các đánh giá của sân
+    @JsonIgnore // Ngăn lặp vô hạn khi stadium chứa các review trong JSON
+    private List<Review> reviews; // Danh sách các đánh giá của sân
 
     // Phương thức tính điểm đánh giá trung bình
     public void calculateAverageRating() {

@@ -10,4 +10,14 @@ public class UIController {
     public String stadium() {
         return "stadium";
     }
+
+    @GetMapping("/review")
+    public String review() {
+        return "review";
+    }
+
+    @GetMapping("/checkReview")
+    public String checkReview() {
+        return "checkreview";
+    }
 }

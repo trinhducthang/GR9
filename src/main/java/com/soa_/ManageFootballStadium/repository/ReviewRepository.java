@@ -1,8 +1,11 @@
 package com.soa_.ManageFootballStadium.repository;
 
 import com.soa_.ManageFootballStadium.model.Review;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    // Có thể tạo thêm các phương thức tìm kiếm, lọc nếu cần
+    Page<Review> findByStadiumId(Long stadiumId, Pageable pageable);
+    Review findByStadiumId(Long stadiumId);
 }
