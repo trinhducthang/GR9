@@ -1,13 +1,18 @@
 package com.soa_.ManageFootballStadium.controller;
 
+import com.soa_.ManageFootballStadium.dto.StadiumResponseDTO;
 import com.soa_.ManageFootballStadium.model.Review;
 import com.soa_.ManageFootballStadium.model.Stadium;
+import com.soa_.ManageFootballStadium.repository.StadiumRepository;
 import com.soa_.ManageFootballStadium.service.StadiumService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/stadiums")
@@ -15,6 +20,7 @@ import java.util.List;
 public class StadiumController {
 
     private final StadiumService stadiumService;
+    private final StadiumRepository stadiumRepository;
 
     // Lấy danh sách tất cả sân bóng
     @GetMapping("/all")
@@ -70,4 +76,27 @@ public class StadiumController {
         stadiumService.addReview(stadiumId, review);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/page")
+    public Page<StadiumResponseDTO> getStadiums(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int rows // 2 hàng, mỗi hàng 5 sân
+    ) {
+        int pageSize = rows * 5; // Mỗi hàng 5 sân
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        // Sử dụng phân trang để lấy danh sách sân bóng
+        Page<Stadium> stadiumPage = stadiumRepository.findAll(pageRequest);
+
+        // Chuyển đổi dữ liệu từ Page<Stadium> sang Page<StadiumResponseDTO>
+        return stadiumPage.map(stadium -> new StadiumResponseDTO(
+                stadium.getId(),
+                stadium.getName(),
+                stadium.getPrice(),
+                stadium.getImageUrl() // Thay thế bằng giá trị thực tế
+        ));
+    }
+
+
+
 }

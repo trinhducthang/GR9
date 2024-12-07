@@ -86,7 +86,7 @@
             margin-bottom: 15px;
         }
 
-        input[type="text"], input[type="number"], input[type="button"] {
+        input[type="text"], input[type="number"], input[type="url"], input[type="button"] {
             width: 100%;
             padding: 10px;
             font-size: 1em;
@@ -150,6 +150,10 @@
             <label for="rating">Điểm Đánh Giá</label>
             <input type="number" id="rating" placeholder="Điểm đánh giá (0-5)" step="0.1" min="0" max="5" required>
         </div>
+        <div class="form-group">
+            <label for="imageUrl">URL Ảnh</label>
+            <input type="url" id="imageUrl" placeholder="URL ảnh của sân bóng" required>
+        </div>
 
         <button type="button" class="btn btn-primary" onclick="saveStadium()">Thêm Sân</button>
         <button type="button" class="btn btn-danger" onclick="cancelForm()">Hủy</button>
@@ -162,6 +166,7 @@
             <th>Địa Chỉ</th>
             <th>Giá Thuê</th>
             <th>Đánh Giá</th>
+            <th>Ảnh</th>
             <th>Hành Động</th>
         </tr>
         </thead>
@@ -179,9 +184,8 @@
     let stadiums = [];
     const itemsPerPage = 5;
     let currentPage = 1;
-    let editingStadiumId = null;  // Biến để lưu ID của sân bóng đang chỉnh sửa
+    let editingStadiumId = null;
 
-    // Hàm hiển thị danh sách sân bóng
     function loadStadiums() {
         fetch('/api/stadiums/all')
             .then(response => response.json())
@@ -193,11 +197,9 @@
             .catch(error => console.error("Error fetching stadiums:", error));
     }
 
-    // Render bảng danh sách sân bóng
     function renderStadiumTable() {
         const tableBody = document.querySelector('#stadiumTable tbody');
-        tableBody.innerHTML = '';  // Clear table before rendering
-
+        tableBody.innerHTML = '';
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const currentPageData = stadiums.slice(startIndex, endIndex);
@@ -205,64 +207,31 @@
         currentPageData.forEach(stadium => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                    <td>${stadium.name}</td>
-                    <td>${stadium.address}</td>
-                    <td>${stadium.price} VND</td>
-                    <td>${stadium.rating}</td>
-                    <td>
-                        <button class="btn btn-primary" onclick="showEditForm(${stadium.id})">Sửa</button>
-                        <button class="btn btn-danger" onclick="deleteStadium(${stadium.id})">Xóa</button>
-                    </td>
-                `;
+                <td>${stadium.name}</td>
+                <td>${stadium.address}</td>
+                <td>${stadium.price} VND</td>
+                <td>${stadium.rating}</td>
+                <td><img src="${stadium.imageUrl}" alt="Ảnh sân" style="width: 100px; height: 50px;"></td>
+                <td>
+                    <button class="btn btn-primary" onclick="showEditForm(${stadium.id})">Sửa</button>
+                    <button class="btn btn-danger" onclick="deleteStadium(${stadium.id})">Xóa</button>
+                </td>
+            `;
             tableBody.appendChild(row);
         });
     }
 
-    // Render phân trang
-    function renderPagination() {
-        const totalPages = Math.ceil(stadiums.length / itemsPerPage);
-        const pagination = document.getElementById('pagination');
-        pagination.innerHTML = '';
-
-        let prevButton = `<button class="btn" onclick="changePage(currentPage - 1)">Trang Trước</button>`;
-        let nextButton = `<button class="btn" onclick="changePage(currentPage + 1)">Trang Sau</button>`;
-
-        if (currentPage === 1) {
-            prevButton = `<button class="btn" disabled>Trang Trước</button>`;
-        }
-        if (currentPage === totalPages) {
-            nextButton = `<button class="btn" disabled>Trang Sau</button>`;
-        }
-
-        pagination.innerHTML = prevButton;
-
-        // Render các số trang
-        for (let i = 1; i <= totalPages; i++) {
-            pagination.innerHTML += `<button class="btn" onclick="changePage(${i})">${i}</button>`;
-        }
-
-        pagination.innerHTML += nextButton;
-    }
-
-    // Thay đổi trang
-    function changePage(page) {
-        const totalPages = Math.ceil(stadiums.length / itemsPerPage);
-        if (page < 1 || page > totalPages) return;
-        currentPage = page;
-        renderStadiumTable();
-        renderPagination();
-    }
-
-    // Thêm hoặc Cập nhật sân bóng
     function saveStadium() {
         const name = document.getElementById('name').value;
         const address = document.getElementById('address').value;
         const price = document.getElementById('price').value;
         const rating = document.getElementById('rating').value;
+        const imageUrl = document.getElementById('imageUrl').value;
 
-        const newStadium = { name, address, price, rating };
+        const newStadium = { name, address, price, rating, imageUrl };
 
-        if (editingStadiumId) {  // Nếu đang chỉnh sửa sân bóng
+        if (editingStadiumId) {
+            // Cập nhật sân bóng
             fetch(`/api/stadiums/${editingStadiumId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -270,14 +239,12 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    const index = stadiums.findIndex(stadium => stadium.id === editingStadiumId);
-                    stadiums[index] = data;
-                    renderStadiumTable();
-                    renderPagination();
-                    cancelForm();
+                    loadStadiums(); // Tải lại danh sách sân bóng
+                    cancelForm(); // Đóng form chỉnh sửa
                 })
-                .catch(error => console.error('Error updating stadium:', error));
-        } else {  // Nếu đang thêm mới sân bóng
+                .catch(error => console.error("Error updating stadium:", error));
+        } else {
+            // Thêm sân bóng mới
             fetch('/api/stadiums', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -285,29 +252,42 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    stadiums.push(data);
-                    renderStadiumTable();
-                    renderPagination();
-                    cancelForm();
+                    loadStadiums(); // Tải lại danh sách sân bóng
+                    cancelForm(); // Đóng form thêm sân
                 })
-                .catch(error => console.error('Error adding stadium:', error));
+                .catch(error => console.error("Error adding stadium:", error));
         }
     }
 
-    // Chỉnh sửa sân bóng
+
+    function deleteStadium(id) {
+        fetch(`/api/stadiums/${id}`, { method: 'DELETE' })
+            .then(() => {
+                loadStadiums();
+            })
+            .catch(error => console.error("Error deleting stadium:", error));
+    }
+
+    function showAddForm() {
+        editingStadiumId = null;
+        document.getElementById('form-title').innerText = 'Thêm Sân Bóng Mới';
+        document.getElementById('form-container').style.display = 'block';
+    }
+
     function showEditForm(id) {
-        const stadium = stadiums.find(stadium => stadium.id === id);
+        const stadium = stadiums.find(s => s.id === id);
         if (stadium) {
-            document.getElementById('form-title').innerText = 'Chỉnh Sửa Sân Bóng';
             document.getElementById('name').value = stadium.name;
             document.getElementById('address').value = stadium.address;
             document.getElementById('price').value = stadium.price;
             document.getElementById('rating').value = stadium.rating;
+            document.getElementById('imageUrl').value = stadium.imageUrl; // Đảm bảo URL ảnh được điền vào ô nhập
+            document.getElementById('form-title').innerText = 'Chỉnh Sửa Sân Bóng';
             document.getElementById('form-container').style.display = 'block';
-            editingStadiumId = id;  // Lưu ID sân bóng đang sửa
-            document.querySelector('.btn-primary').innerText = 'Cập nhật Sân';  // Thay đổi nút thành Cập nhật
+            editingStadiumId = id;
         }
     }
+
 
     function cancelForm() {
         document.getElementById('form-container').style.display = 'none';
@@ -315,31 +295,26 @@
         document.getElementById('address').value = '';
         document.getElementById('price').value = '';
         document.getElementById('rating').value = '';
-        editingStadiumId = null;  // Reset ID khi hủy
-        document.querySelector('.btn-primary').innerText = 'Thêm Sân';  // Đặt lại nút về Thêm
+        document.getElementById('imageUrl').value = '';
+        editingStadiumId = null;
     }
 
-    // Xóa sân
-    function deleteStadium(id) {
-        fetch(`/api/stadiums/${id}`, { method: 'DELETE' })
-            .then(() => {
-                stadiums = stadiums.filter(stadium => stadium.id !== id);
+    function renderPagination() {
+        const paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+        const totalPages = Math.ceil(stadiums.length / itemsPerPage);
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement('button');
+            button.innerText = i;
+            button.onclick = () => {
+                currentPage = i;
                 renderStadiumTable();
-                renderPagination();
-            })
-            .catch(error => console.error('Error deleting stadium:', error));
+            };
+            paginationContainer.appendChild(button);
+        }
     }
 
-    // Hiển thị form thêm sân
-    function showAddForm() {
-        document.getElementById('form-title').innerText = 'Thêm Sân Bóng Mới';
-        document.getElementById('form-container').style.display = 'block';
-        editingStadiumId = null;  // Reset khi thêm mới
-        document.querySelector('.btn-primary').innerText = 'Thêm Sân';  // Đặt lại nút về Thêm
-    }
-
-    // Khi trang được tải, gọi hàm loadStadiums để lấy dữ liệu
-    window.onload = loadStadiums;
+    loadStadiums();
 </script>
 </body>
 </html>

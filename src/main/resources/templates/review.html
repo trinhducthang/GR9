@@ -65,24 +65,21 @@
 </form>
 
 <script>
-    // Lấy danh sách các sân từ API và cập nhật dropdown
-    function fetchStadiums() {
-        fetch('/api/stadiums/all')
-            .then(response => response.json())
-            .then(data => {
-                const stadiumSelect = document.getElementById('stadiumId');
-                data.forEach(stadium => {
-                    const option = document.createElement('option');
-                    option.value = stadium.id;
-                    option.textContent = stadium.name;
-                    stadiumSelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching stadiums:', error));
+    // Lấy id sân từ localStorage và cập nhật dropdown nếu có
+    function setStadiumFromLocalStorage() {
+        const stadiumId = localStorage.getItem('stadiumId');
+        if (stadiumId) {
+            const stadiumSelect = document.getElementById('stadiumId');
+            const option = document.createElement('option');
+            option.value = stadiumId;
+            option.textContent = `Sân ID: ${stadiumId}`;
+            stadiumSelect.appendChild(option);
+            stadiumSelect.disabled = true; // Không cho phép chọn lại sân
+        }
     }
 
-    // Gọi hàm fetchStadiums khi trang tải
-    window.onload = fetchStadiums;
+    // Gọi hàm setStadiumFromLocalStorage khi trang tải
+    window.onload = setStadiumFromLocalStorage;
 
     // Gửi đánh giá
     document.getElementById('reviewForm').addEventListener('submit', function(event) {

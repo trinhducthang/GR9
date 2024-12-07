@@ -24,6 +24,7 @@ public class Stadium {
     private Double rating;  // Điểm đánh giá trung bình
     private String description;
     private String facilities;
+    private String imageUrl;
 
     @OneToMany(mappedBy = "stadium")
     @JsonIgnore // Ngăn lặp vô hạn khi stadium chứa các review trong JSON

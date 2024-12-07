@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking and Review Count Per Month</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Booking and Review Count Per Month</h1>
+    <canvas id="bookingReviewChart"></canvas>
+</div>
+
+<script>
+    async function fetchStats() {
+        try {
+            const response = await fetch('/api/admin/bookings/monthly-stats');
+            const stats = await response.json();
+
+            const months = Object.keys(stats.bookingCounts);
+            const bookingCounts = Object.values(stats.bookingCounts);
+            const reviewCounts = Object.values(stats.reviewCounts);
+
+            renderChart(months, bookingCounts, reviewCounts);
+        } catch (error) {
+            console.error("Error fetching stats:", error);
+        }
+    }
+
+    // Render the line chart using Chart.js
+    function renderChart(months, bookingCounts, reviewCounts) {
+        const ctx = document.getElementById('bookingReviewChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months, // months array
+                datasets: [
+                    {
+                        label: 'Bookings per Month',
+                        data: bookingCounts, // booking counts array
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Reviews per Month',
+                        data: reviewCounts, // review counts array
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize the chart by fetching the booking and review counts
+    fetchStats();
+</script>
+
+</body>
+</html>

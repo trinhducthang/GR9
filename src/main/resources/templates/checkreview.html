@@ -60,25 +60,29 @@
 <div id="reviewsContainer"></div>
 
 <script>
-    // Lấy danh sách các sân và điền vào dropdown
-    function fetchStadiums() {
-        fetch('/api/stadiums/all')
-            .then(response => response.json())
-            .then(data => {
-                const stadiumSelect = document.getElementById('stadiumSelect');
-                data.forEach(stadium => {
-                    const option = document.createElement('option');
-                    option.value = stadium.id;
-                    option.textContent = stadium.name;
-                    stadiumSelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching stadiums:', error));
+    // Lấy id sân từ localStorage và điền vào dropdown
+    function setStadiumFromLocalStorage() {
+        const savedStadiumId = localStorage.getItem('stadiumId');
+        if (savedStadiumId) {
+            const stadiumSelect = document.getElementById('stadiumSelect');
+            const option = document.createElement('option');
+            option.value = savedStadiumId;
+            option.textContent = `Sân ID: ${savedStadiumId}`;
+            stadiumSelect.appendChild(option);
+            stadiumSelect.disabled = true; // Không cho phép chọn lại sân
+            fetchReviews(); // Tự động gọi fetchReviews nếu có sân đã chọn
+        }
     }
+
+    // Lưu lại sân đã chọn vào localStorage
+    document.getElementById('stadiumSelect').addEventListener('change', function() {
+        const selectedStadiumId = this.value;
+        localStorage.setItem('stadiumId', selectedStadiumId); // Lưu sân đã chọn
+    });
 
     // Lấy đánh giá của sân đã chọn
     function fetchReviews() {
-        const stadiumId = document.getElementById('stadiumSelect').value;
+        const stadiumId = localStorage.getItem('stadiumId'); // Lấy id sân từ localStorage
         if (!stadiumId) {
             alert("Vui lòng chọn sân!");
             return;
@@ -110,10 +114,8 @@
             .catch(error => console.error('Error fetching reviews:', error));
     }
 
-
-
-    // Gọi hàm fetchStadiums khi trang tải
-    window.onload = fetchStadiums;
+    // Gọi hàm setStadiumFromLocalStorage khi trang tải
+    window.onload = setStadiumFromLocalStorage;
 </script>
 
 </body>

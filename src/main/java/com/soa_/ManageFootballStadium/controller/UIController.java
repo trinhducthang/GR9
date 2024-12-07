@@ -20,4 +20,19 @@ public class UIController {
     public String checkReview() {
         return "checkreview";
     }
+
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
+    @GetMapping("/admin")
+    public String admin() {
+        return "adminbooking";
+    }
+
+    @GetMapping("/admin/chart")
+    public String adminChart() {
+        return "adminchart";
+    }
 }

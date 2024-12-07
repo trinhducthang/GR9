@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sân bóng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stadium-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .stadium-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: calc(20% - 10px); /* 5 card mỗi hàng */
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stadium-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .stadium-card h3 {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .stadium-card p {
+            color: #888;
+            font-size: 1rem;
+        }
+
+        .stadium-card button {
+            margin: 5px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .stadium-card button:hover {
+            background-color: #45a049;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        /* Modal style */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal input, .modal button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        /* Modal Container */
+        .modal {
+            display: none; /* Ẩn modal khi không cần thiết */
+            position: fixed;
+            z-index: 1; /* Đảm bảo modal xuất hiện trên cùng */
+            left: 0;
+            top: 0;
+            width: 100%; /* Toàn màn hình */
+            height: 100%;
+            overflow: auto; /* Cuộn khi cần thiết */
+            background-color: rgba(0, 0, 0, 0.4); /* Màu nền mờ */
+            padding-top: 60px; /* Khoảng cách từ trên cùng */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%; /* Chiếm 80% chiều rộng của màn hình */
+            max-width: 500px; /* Chiều rộng tối đa */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Close Button */
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 0;
+            right: 15px;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Style for the Form */
+        #bookingForm {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Input Fields */
+        input[type="datetime-local"],
+        input[type="tel"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        input[type="tel"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        /* Button */
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsive for smaller screens */
+        @media (max-width: 600px) {
+            .modal-content {
+                width: 95%;
+            }
+
+            .modal {
+                padding-top: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Danh sách sân bóng</h1>
+    <div class="stadium-container" id="stadium-container"></div>
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- Modal Booking -->
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeBookingModal()">&times;</span>
+        <h2>Đặt Sân</h2>
+        <form id="bookingForm">
+            <label for="startTime">Thời gian bắt đầu:</label>
+            <input type="datetime-local" id="startTime" required>
+
+            <label for="endTime">Thời gian kết thúc:</label>
+            <input type="datetime-local" id="endTime" required>
+
+            <label for="phone">Số điện thoại:</label>
+            <input type="tel" id="phone" required placeholder="Nhập số điện thoại">
+
+            <button type="submit">Đặt Sân</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    const stadiumContainer = document.getElementById("stadium-container");
+    const paginationContainer = document.getElementById("pagination");
+
+    let currentPage = 0;
+    const pageSize = 10;
+    const userId = 1; // ID người dùng, cần thay đổi theo thực tế
+
+    let selectedStadiumId = null;
+
+    async function fetchStadiums(page) {
+        try {
+            const response = await fetch(`/api/stadiums/page?page=${page}&size=${pageSize}`);
+            const data = await response.json();
+            displayStadiums(data.content);
+            setupPagination(data);
+        } catch (error) {
+            console.error("Error fetching stadiums:", error);
+            stadiumContainer.innerHTML = "<p>Error loading stadiums</p>";
+        }
+    }
+
+    function displayStadiums(stadiums) {
+        stadiumContainer.innerHTML = ""; // Clear container
+
+        stadiums.forEach(stadium => {
+            const card = document.createElement("div");
+            card.className = "stadium-card";
+
+            card.innerHTML = `
+            <img src="${stadium.imageUrl}" alt="Ảnh sân bóng">
+            <h3>${stadium.name}</h3>
+            <p>Giá: ${stadium.price} VND</p>
+            <button onclick="rateStadium(${stadium.id})">Đánh giá</button>
+            <button onclick="viewReviews(${stadium.id})">Xem đánh giá</button>
+            <button onclick="openBookingModal(${stadium.id})">Đặt sân</button>
+        `;
+
+            stadiumContainer.appendChild(card);
+        });
+    }
+
+    function setupPagination(data) {
+        paginationContainer.innerHTML = ""; // Clear pagination
+
+        const prevButton = document.createElement("button");
+        prevButton.innerText = "Trang trước";
+        prevButton.disabled = data.first;
+        prevButton.onclick = () => {
+            currentPage -= 1;
+            fetchStadiums(currentPage);
+        };
+        paginationContainer.appendChild(prevButton);
+
+        const nextButton = document.createElement("button");
+        nextButton.innerText = "Trang sau";
+        nextButton.disabled = data.last;
+        nextButton.onclick = () => {
+            currentPage += 1;
+            fetchStadiums(currentPage);
+        };
+        paginationContainer.appendChild(nextButton);
+    }
+
+    function rateStadium(id) {
+        localStorage.setItem('stadiumId',id)
+        window.location.href='/review'
+
+    }
+
+    function viewReviews(id) {
+        localStorage.setItem('stadiumId',id)
+        window.location.href='/checkReview'
+    }
+
+    // Mở modal booking
+    function openBookingModal(stadiumId) {
+        selectedStadiumId = stadiumId; // Lưu ID sân để sử dụng khi gửi yêu cầu đặt sân
+        document.getElementById("bookingModal").style.display = "block";
+    }
+
+    // Đóng modal booking
+    function closeBookingModal() {
+        document.getElementById("bookingModal").style.display = "none";
+    }
+
+    // Thêm sự kiện submit cho form booking
+    document.getElementById("bookingForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const startTime = document.getElementById("startTime").value;
+        const endTime = document.getElementById("endTime").value;
+        const phone = document.getElementById("phone").value;
+
+        const bookingData = {
+            stadiumId: selectedStadiumId,
+            userId: userId,  // Giả sử bạn có userId từ session hoặc từ login
+            phone: phone,
+            startTime: startTime,
+            endTime: endTime
+        };
+
+        try {
+            const response = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData),
+            });
+
+            if (response.ok) {
+                const booking = await response.json();
+                alert('Đặt sân thành công: ' + booking.id);
+                closeBookingModal();
+            } else {
+                alert('Sân bạn đặt đã có người đặt rồi!');
+            }
+        } catch (error) {
+            console.error("Error booking stadium:", error);
+            alert('Có lỗi khi đặt sân.');
+        }
+    });
+
+
+
+    fetchStadiums(currentPage);
+</script>
+</body>
+</html>
