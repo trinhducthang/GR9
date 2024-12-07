@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class UIController {
 
-    @GetMapping("/stadium")
+    @GetMapping("/admin")
     public String stadium() {
         return "stadium";
     }
@@ -24,11 +24,6 @@ public class UIController {
     @GetMapping("/")
     public String index() {
         return "index";
-    }
-
-    @GetMapping("/admin")
-    public String admin() {
-        return "adminbooking";
     }
 
     @GetMapping("/admin/chart")

@@ -131,6 +131,7 @@
     <h1 class="title">Danh Sách Sân Bóng</h1>
 
     <button class="btn btn-primary" onclick="showAddForm()">Thêm Sân Mới</button>
+    <button class="btn btn-primary" onclick="window.location.href='/admin/chart'">Thống kê số liệu</button>
 
     <div class="form-container" id="form-container" style="display:none;">
         <h2 id="form-title">Thêm Sân Bóng Mới</h2>
@@ -181,6 +182,53 @@
 </div>
 
 <script>
+    // Kiểm tra trạng thái đăng nhập khi trang được tải
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+    });
+
+    // Kiểm tra trạng thái đăng nhập
+    function checkLoginStatus() {
+        const loginData = JSON.parse(localStorage.getItem('loginData'));
+        const currentTime = new Date().getTime();
+
+        if (loginData && loginData.expiry > currentTime) {
+            // Người dùng đã đăng nhập và chưa hết thời gian
+            loadStadiums();
+        } else {
+            // Người dùng chưa đăng nhập hoặc hết thời gian đăng nhập
+            login();
+        }
+    }
+
+    // Hàm xử lý đăng nhập
+    function login() {
+        // Dùng prompt để yêu cầu nhập tài khoản và mật khẩu
+        const username = prompt("Nhập tài khoản:");
+        const password = prompt("Nhập mật khẩu:");
+
+        // Kiểm tra tài khoản và mật khẩu
+        if (username === "admin" && password === "1") {
+            // Đăng nhập thành công
+            const expiryTime = new Date().getTime() + 60 * 60 * 1000; // Thời gian hết hạn là 1 giờ
+            const loginData = {
+                username: username,
+                expiry: expiryTime
+            };
+            localStorage.setItem('loginData', JSON.stringify(loginData));
+            alert("Đăng nhập thành công!");
+
+            // Tiến hành tải dữ liệu sân bóng
+            loadStadiums();
+        } else {
+            // Đăng nhập thất bại
+            alert("Tài khoản hoặc mật khẩu không đúng.");
+            // Sau khi đăng nhập thất bại, trang sẽ yêu cầu đăng nhập lại
+            login();
+        }
+    }
+
+
     let stadiums = [];
     const itemsPerPage = 5;
     let currentPage = 1;
