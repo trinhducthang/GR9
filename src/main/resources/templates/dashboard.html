@@ -52,7 +52,7 @@
             color: white;
         }
 
-        .chart-container, .table-container, .product-crud {
+        .table-container, .product-crud {
             display: none; /* Bắt đầu bằng cách ẩn tất cả các phần */
             width: 100%;
             margin: 0 auto;
@@ -112,13 +112,12 @@
 <body>
 <div><a href="/home"><img style="width: 8%;position: absolute;top:0" src="https://images.vexels.com/content/157295/preview/computer-laptop-icon-495a5f.png"></a></div>
 <header>
-    Order & Product Dashboard
+    Product Dashboard
 </header>
 
 <div class="container">
     <div class="button-group">
-        <button onclick="showSection('orders')">Order Dashboard</button>
-        <button onclick="showSection('products')">Product CRUD</button>
+        <button onclick="showSection('products')">Quản lý sản phẩm</button>
         <button onclick="showSection('users')">Users & Orders</button>
     </div>
 
@@ -134,28 +133,6 @@
             </tr>
             </thead>
             <tbody></tbody>
-        </table>
-    </div>
-
-
-    <!-- Biểu đồ và bảng đơn hàng -->
-    <div id="ordersSection" class="chart-container table-container">
-        <h3>Số lượng đơn hàng theo ngày trong tháng</h3>
-        <canvas id="ordersChart"></canvas>
-
-        <h3>Thông tin đơn hàng</h3>
-        <table id="ordersTable">
-            <thead>
-            <tr>
-                <th>ID Đơn Hàng</th>
-                <th>Người Dùng</th>
-                <th>Ngày Đặt Hàng</th>
-                <th>Trạng Thái</th>
-                <th>Tổng Giá</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
         </table>
     </div>
 
@@ -202,60 +179,6 @@
 
 <script>
     let editingProductId = null; // Biến lưu id sản phẩm khi cập nhật
-
-
-    async function fetchData() {
-        try {
-            const month = 12;
-            const year = 2024;
-
-            // Fetch số lượng đơn hàng theo ngày
-            const ordersCountByDayResponse = await fetch(`/api/orders/daily-count?month=${month}&year=${year}`);
-            const ordersCountByDay = await ordersCountByDayResponse.json();
-
-            // Chuyển đổi keys (ngày) thành mảng và sắp xếp theo thứ tự ngày tháng
-            const sortedDates = Object.keys(ordersCountByDay).sort((a, b) => new Date(a) - new Date(b));
-
-            // Dữ liệu biểu đồ
-            const chartData = {
-                labels: sortedDates,  // Các nhãn được sắp xếp theo thứ tự ngày tháng
-                datasets: [{
-                    label: 'Số lượng đơn hàng',
-                    data: sortedDates.map(date => ordersCountByDay[date]),
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    fill: true,
-                }]
-            };
-
-            // Vẽ biểu đồ
-            const ctx = document.getElementById('ordersChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: chartData,
-                options: { responsive: true }
-            });
-
-            // Fetch thông tin đơn hàng để hiển thị trong bảng
-            const ordersResponse = await fetch('/api/orders');
-            const orders = await ordersResponse.json();
-            const ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
-            ordersTable.innerHTML = '';
-            orders.forEach(order => {
-                const row = ordersTable.insertRow();
-                row.innerHTML = `
-                <td>${order.id}</td>
-                <td>${order.user?.name || 'N/A'}</td>
-                <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-                <td>${order.status}</td>
-                <td>${order.totalPrice}</td>
-            `;
-            });
-
-        } catch (error) {
-            console.error('Lỗi khi fetch dữ liệu:', error);
-        }
-    }
 
     async function fetchProducts() {
         try {
@@ -341,13 +264,6 @@
         fetchProducts();
     }
 
-    function check(){
-        const username = localStorage.getItem('username');
-        if (username !== 'admin' && username !== null) {
-            window.location.href = '/home';
-        }
-    }
-    check();
     async function fetchUsersWithOrders() {
         try {
             const response = await fetch('/api/users/users-order-count');
@@ -373,10 +289,8 @@
     }
 
     function showSection(section) {
-        document.getElementById('ordersSection').style.display = (section === 'orders') ? 'block' : 'none';
         document.getElementById('productsSection').style.display = (section === 'products') ? 'block' : 'none';
         document.getElementById('usersSection').style.display = (section === 'users') ? 'block' : 'none';
-        if (section === 'orders') fetchData();
         if (section === 'products') fetchProducts();
         if (section === 'users') fetchUsersWithOrders();
     }

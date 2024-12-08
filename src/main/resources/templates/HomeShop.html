@@ -247,8 +247,16 @@
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                displayProducts(data.content);  // `data.content` for the product list
-                displayPagination(data.totalPages, page);  // Pass total pages and current page
+                if (data.content && data.content.length > 0) {
+                    displayProducts(data.content); // `data.content` for the product list
+                    displayPagination(data.totalPages, page); // Pass total pages and current page
+                } else {
+                    window.alert("Không tìm thấy sản phẩm yêu cầu của bạn!")
+
+                    // Xóa hoặc ẩn phần phân trang
+                    const paginationContainer = document.getElementById('pagination-container');
+                    paginationContainer.innerHTML = '';
+                }
             })
             .catch(error => console.error('Error fetching products:', error));
     }
