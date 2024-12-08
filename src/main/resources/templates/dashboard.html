@@ -160,17 +160,17 @@
             <input type="text" id="productImageUrl">
 
             <!-- Nút thêm mới -->
-            <button onclick="showConfirmation()">Thêm mới</button>
+            <button onclick="checkAndSave()">Thêm mới</button>
 
             <!-- Form xác nhận -->
             <div id="confirmationBox" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
                 <h3>Bạn có chắc chắn muốn thêm mới?</h3>
-                <button onclick="saveProduct()">Thêm mới</button>
-                <button onclick="cancelAction()">Hủy</button>
+                <button type="submit" onclick="saveProduct()">Thêm mới</button>
+                <button type="submit" onclick="cancelAction()">Hủy</button>
             </div>
 
             <!-- Nút "Cập nhật sản phẩm", ban đầu ẩn đi -->
-            <button onclick="showUpdateConfirmation()" style="display: none;" id="updateButton">Cập nhật sản phẩm</button>
+            <button onclick="checkAndUpdate()" style="display: none;" id="updateButton">Cập nhật sản phẩm</button>
 
             <!-- Form xác nhận cập nhật sản phẩm -->
             <div id="updateConfirmationBox" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
@@ -204,6 +204,42 @@
 </div>
 
 <script>
+
+    function checkAndSave() {
+        const product = {
+            name: document.getElementById('productName').value,
+            model: document.getElementById('productModel').value,
+            description: document.getElementById('productDescription').value,
+            price: document.getElementById('productPrice').value,
+            imageUrl: document.getElementById('productImageUrl').value
+        };
+
+        // Kiểm tra nếu có trường nào bị bỏ trống
+        if (!product.name || !product.model || !product.description || !product.price || !product.imageUrl) {
+            window.alert("Vui lòng không để trống các ô thông tin!");
+            return;
+        }
+
+        showConfirmation();
+    }
+
+    function checkAndUpdate(){
+        const product = {
+            name: document.getElementById('productName').value,
+            model: document.getElementById('productModel').value,
+            description: document.getElementById('productDescription').value,
+            price: document.getElementById('productPrice').value,
+            imageUrl: document.getElementById('productImageUrl').value
+        };
+
+        // Kiểm tra nếu có trường nào bị bỏ trống
+        if (!product.name || !product.model || !product.description || !product.price || !product.imageUrl) {
+            window.alert("Vui lòng không để trống các ô thông tin!");
+            return;
+        }
+
+        showUpdateConfirmation();
+    }
 
     let productIdToDelete = null; // Biến lưu trữ ID sản phẩm cần xóa
 
