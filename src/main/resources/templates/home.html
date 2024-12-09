@@ -231,7 +231,7 @@
     </div>
     <div class="thangcho">
         <button id="order-button" onclick="window.location.href='/myOrder'">Đơn hàng của tôi</button>
-        <button id="checkout-button" onclick="window.location.href='/checkout'">Thanh toán (0)</button>
+        <button id="checkout-button" onclick="window.location.href='/checkout'">Hoàn tất đơn hàng (0)</button>
     </div>
 
 
@@ -441,7 +441,7 @@
         const cart = getCart();
         const cartCount = cart.length;  // Tính tổng số sản phẩm trong giỏ hàng (số phần tử trong mảng)
         const checkoutButton = document.getElementById('checkout-button');
-        checkoutButton.innerHTML = `Giỏ hàng (${cartCount})`;  // Cập nhật số lượng vào nút Checkout
+        checkoutButton.innerHTML = `Hoàn tất đơn hàng (${cartCount})`;  // Cập nhật số lượng vào nút Checkout
     }
 
     document.addEventListener('DOMContentLoaded', function() {

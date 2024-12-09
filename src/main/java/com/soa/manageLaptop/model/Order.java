@@ -19,6 +19,8 @@ public class Order {
     private LocalDateTime orderDate;
     private String status;
     private double totalPrice;
+    private String phoneNumber;
+    private String address;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false) // This should be not nullable

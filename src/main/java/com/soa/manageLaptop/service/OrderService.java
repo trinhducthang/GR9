@@ -31,6 +31,8 @@ public class OrderService {
         Order order = new Order();
         order.setUser(user); // This sets the user, which should link to the user_id in the database
         order.setOrderDate(LocalDateTime.now());
+        order.setPhoneNumber(orderRequest.getPhoneNumber());
+        order.setAddress(orderRequest.getAddress());
         order.setStatus("PENDING");
 
         double totalPrice = 0;
