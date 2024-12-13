@@ -205,6 +205,21 @@
 
 <script>
 
+
+    function check(){
+        const jwtToken = localStorage.getItem('jwtToken');
+        const username = localStorage.getItem('username');
+        if(!jwtToken || !username){
+            location.href='/login'
+            window.alert("Vui long dang nhap!")
+        }
+        if(username !== 'admin'){
+            location.href='/home'
+        }
+    }
+
+    check()
+
     function checkAndSave() {
         const product = {
             name: document.getElementById('productName').value,
