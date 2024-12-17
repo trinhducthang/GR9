@@ -91,7 +91,7 @@
     </style>
 </head>
 <body>
-
+<div><a href="/dashboard"><img style="width: 8%;position: absolute;top:0" src="https://images.vexels.com/content/157295/preview/computer-laptop-icon-495a5f.png"></a></div>
 <div class="container">
     <h3>Thông tin Đơn hàng</h3>
 
@@ -125,6 +125,25 @@
 </div>
 
 <script>
+    let hasRun = false;
+
+    function runOnce() {
+        if (!hasRun) {
+            const username = localStorage.getItem('username')
+            if(username === 'user'){
+                window.location.href='/home'
+            }
+            else {
+
+            }
+            hasRun = true;
+        }
+    }
+
+    runOnce(); // Chạy lần 1
+    runOnce(); // Không chạy nữa
+
+
     // Hàm để lấy dữ liệu từ API cho một trạng thái cụ thể
     function fetchOrderData() {
 

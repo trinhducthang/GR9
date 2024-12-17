@@ -64,7 +64,7 @@ public class DashboardController {
         return "checkout";
     }
 
-    @GetMapping("/new")
+    @GetMapping("/analysis")
     public String newOrder(Model model) {
         return "new";
     }
