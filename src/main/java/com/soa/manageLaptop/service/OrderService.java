@@ -1,5 +1,6 @@
 package com.soa.manageLaptop.service;
 
+import com.soa.manageLaptop.dto.OrderStatusSummary;
 import com.soa.manageLaptop.model.Order;
 import com.soa.manageLaptop.model.Product;
 import com.soa.manageLaptop.model.User;
@@ -10,6 +11,7 @@ import com.soa.manageLaptop.request.OrderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -86,5 +88,18 @@ public class OrderService {
 
         return dailyCounts;
     }
+
+    public OrderStatusSummary getOrderCountAndTotalPriceByStatus(String status) {
+        List<Order> orders = orderRepository.findByStatus(status);
+        long count = 0;
+        double totalPrice = 0.0;
+        for (Order order : orders) {
+            count++;
+            totalPrice+=order.getTotalPrice();
+        }
+        return new OrderStatusSummary(count, totalPrice);
+    }
+
+
 }
 

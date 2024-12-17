@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Đơn hàng</title>
+
+    <!-- Thêm Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS cho giao diện */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            color: #333;
+        }
+
+        .status-card {
+            display: flex;
+            justify-content: space-between;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-card h4 {
+            margin: 0;
+        }
+
+        .status-card p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .status-card .count {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .status-card .total {
+            font-size: 18px;
+            font-weight: bold;
+            color: green;
+        }
+
+        .status-card.pending .total {
+            color: orange;
+        }
+
+        .status-card.paid .total {
+            color: blue;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 20px;
+            color: #666;
+        }
+
+        /* Thêm style cho biểu đồ */
+        .chart-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 40px;
+        }
+
+        /* Điều chỉnh kích thước cho các biểu đồ */
+        canvas {
+
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3>Thông tin Đơn hàng</h3>
+
+    <!-- Hiển thị thông tin đơn đã thanh toán -->
+    <div id="paid-orders" class="status-card paid">
+        <div>
+            <h4>Đã thanh toán</h4>
+            <p>Số lượng: <span id="paid-count" class="count">0</span></p>
+            <p>Tổng tiền: <span id="paid-total" class="total">0</span> VND</p>
+        </div>
+    </div>
+
+    <!-- Hiển thị thông tin đơn đang chờ xử lý (PENDING) -->
+    <div id="pending-orders" class="status-card pending">
+        <div>
+            <h4>Chưa thanh toán</h4>
+            <p>Số lượng: <span id="pending-count" class="count">0</span></p>
+            <p>Tổng tiền: <span id="pending-total" class="total">0</span> VND</p>
+        </div>
+    </div>
+
+    <!-- Đoạn text khi dữ liệu đang được tải -->
+    <div id="loading" class="loading">Đang tải dữ liệu...</div>
+
+    <!-- Thêm biểu đồ ở đây -->
+    <div class="chart-container">
+        <canvas id="orderCountChart"></canvas>
+        <canvas id="totalPriceChart"></canvas>
+
+    </div>
+</div>
+
+<script>
+    // Hàm để lấy dữ liệu từ API cho một trạng thái cụ thể
+    function fetchOrderData() {
+
+        const orderCountCanvas = document.getElementById('orderCountChart');
+        const totalPriceCanvas = document.getElementById('totalPriceChart');
+
+        // Thay đổi kích thước canvas trong JavaScript
+        orderCountCanvas.width = 100;  // Đặt chiều rộng của biểu đồ đầu tiên
+        orderCountCanvas.height = 100; // Đặt chiều cao của biểu đồ đầu tiên
+
+        totalPriceCanvas.width = 100;  // Đặt chiều rộng của biểu đồ thứ hai
+        totalPriceCanvas.height = 100;
+        // Gọi API để lấy dữ liệu cho cả hai trạng thái (Đã thanh toán và PENDING)
+        fetch('/api/orders/order-status-summary?status=Đã thanh toán')
+            .then(response => response.json())
+            .then(data => {
+                // Cập nhật thông tin cho đơn "Đã thanh toán"
+                const paidOrderCount = data.orderCount;
+                const paidTotalPrice = data.totalPrice;
+
+                document.getElementById('paid-count').textContent = paidOrderCount;
+                document.getElementById('paid-total').textContent = paidTotalPrice.toLocaleString('vi-VN');
+
+                // Gọi API cho trạng thái "PENDING"
+                return fetch('/api/orders/order-status-summary?status=PENDING')
+                    .then(response => response.json())
+                    .then(pendingData => {
+                        const pendingOrderCount = pendingData.orderCount;
+                        const pendingTotalPrice = pendingData.totalPrice;
+
+                        document.getElementById('pending-count').textContent = pendingOrderCount;
+                        document.getElementById('pending-total').textContent = pendingTotalPrice.toLocaleString('vi-VN');
+
+                        // Sau khi có cả hai dữ liệu, vẽ biểu đồ
+                        drawCharts(paidOrderCount, paidTotalPrice, pendingOrderCount, pendingTotalPrice);
+                    });
+            })
+            .catch(error => {
+                console.error('Lỗi khi lấy dữ liệu:', error);
+            });
+    }
+
+    // Hàm để vẽ hai Pie Chart
+    // Hàm vẽ Pie Chart với kích thước điều chỉnh
+    function drawCharts(paidOrderCount, paidTotalPrice, pendingOrderCount, pendingTotalPrice) {
+        // Lấy các đối tượng canvas
+        const orderCountCanvas = document.getElementById('orderCountChart');
+        const totalPriceCanvas = document.getElementById('totalPriceChart');
+
+        // Cập nhật kích thước canvas thông qua JavaScript
+        orderCountCanvas.width = 200;  // Đặt chiều rộng cho biểu đồ đầu tiên
+        orderCountCanvas.height = 200; // Đặt chiều cao cho biểu đồ đầu tiên
+
+        totalPriceCanvas.width = 200;  // Đặt chiều rộng cho biểu đồ thứ hai
+        totalPriceCanvas.height = 200; // Đặt chiều cao cho biểu đồ thứ hai
+
+        // Vẽ biểu đồ số lượng đơn hàng (order count)
+        const orderCountCtx = orderCountCanvas.getContext('2d');
+        new Chart(orderCountCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Đã thanh toán', 'Chưa thanh toán'],
+                datasets: [{
+                    data: [paidOrderCount, pendingOrderCount],
+                    backgroundColor: ['#36A2EB', '#FF6384'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,  // Biểu đồ sẽ tự động thay đổi kích thước theo container
+                plugins: {
+                    legend: {
+                        position: 'top',  // Vị trí legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                if (tooltipItem.dataIndex === 0) {
+                                    return `Đã thanh toán: ${tooltipItem.raw}`;
+                                } else {
+                                    return `Chưa thanh toán: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Vẽ biểu đồ tổng tiền (total price)
+        const totalPriceCtx = totalPriceCanvas.getContext('2d');
+        new Chart(totalPriceCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Đã thanh toán', 'Chưa thanh toán'],
+                datasets: [{
+                    data: [paidTotalPrice, pendingTotalPrice],
+                    backgroundColor: ['#36A2EB', '#FF6384'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,  // Biểu đồ sẽ tự động thay đổi kích thước theo container
+                plugins: {
+                    legend: {
+                        position: 'top',  // Vị trí legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                if (tooltipItem.dataIndex === 0) {
+                                    return `Đã thanh toán: ${tooltipItem.raw.toLocaleString('vi-VN')} VND`;
+                                } else {
+                                    return `Chưa thanh toán: ${tooltipItem.raw.toLocaleString('vi-VN')} VND`;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+    // Hàm này sẽ chạy khi trang được tải xong
+    window.onload = function() {
+        // Ẩn thông báo "Đang tải dữ liệu"
+        document.getElementById('loading').style.display = 'none';
+
+        // Gọi API để lấy và xử lý dữ liệu
+        fetchOrderData();
+    };
+</script>
+
+</body>
+</html>

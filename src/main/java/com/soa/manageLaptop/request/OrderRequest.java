@@ -10,5 +10,4 @@ public class OrderRequest {
     private List<Long> productIds; // Danh sách ID sản phẩm
     private String phoneNumber;
     private String address;
-
 }

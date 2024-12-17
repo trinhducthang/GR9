@@ -1,5 +1,6 @@
 package com.soa.manageLaptop.controller;
 
+import com.soa.manageLaptop.dto.OrderStatusSummary;
 import com.soa.manageLaptop.model.Order;
 import com.soa.manageLaptop.request.OrderRequest;
 import com.soa.manageLaptop.service.OrderService;
@@ -41,6 +42,12 @@ public class OrderController {
     @GetMapping("/daily-count")
     public Map<String, Integer> getOrdersCountByDay(@RequestParam int month, @RequestParam int year) {
         return orderService.getOrdersCountByDay(month, year);
+    }
+
+    @GetMapping("/order-status-summary")
+    public OrderStatusSummary getOrderStatusSummary(@RequestParam String status) {
+        // Gọi service để lấy dữ liệu
+        return orderService.getOrderCountAndTotalPriceByStatus(status);
     }
 
 }

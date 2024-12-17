@@ -64,6 +64,11 @@ public class DashboardController {
         return "checkout";
     }
 
+    @GetMapping("/new")
+    public String newOrder(Model model) {
+        return "new";
+    }
+
     @GetMapping("/payment-failure")
     public String paymentFailure(Model model) {
         return "payment-failure";
