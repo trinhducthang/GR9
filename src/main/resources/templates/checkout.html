@@ -169,7 +169,7 @@
         <input type="text" id="phoneNumber" placeholder="Nhập số điện thoại" required>
     </div>
 
-    <button id="checkout-button" onclick="checkout()">Xác nhận</button>
+    <button id="checkout-button" onclick="check()">Xác nhận</button>
 </div>
 
 <script>
@@ -262,6 +262,14 @@
         displayCartItems();  // Cập nhật lại giỏ hàng
     }
 
+    function check(){
+        const address = document.getElementById('address').value.trim();
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
+        if(!address || !phoneNumber){
+            alert("Vui long nhap du thong tin!")
+        }
+        else checkout();
+    }
 
 
     function checkout() {
@@ -273,6 +281,8 @@
             alert("Bạn chưa đăng nhập hoặc chưa có bất kì sản phẩm nào trong rỏ hàng!");
             return;
         }
+
+
 
         // Gửi yêu cầu tạo đơn hàng tới server
         const orderRequest = {
