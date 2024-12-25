@@ -22,6 +22,16 @@ public class StadiumController {
     private final StadiumService stadiumService;
     private final StadiumRepository stadiumRepository;
 
+    @GetMapping("/details/{id}")
+    public ResponseEntity<Stadium> getStadiumById(@PathVariable Long id) {
+        Stadium stadium = stadiumService.getStadiumById(id);
+        if (stadium != null) {
+            return ResponseEntity.ok(stadium);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // Lấy danh sách tất cả sân bóng
     @GetMapping("/all")
     public ResponseEntity<List<Stadium>> getAllStadiums() {

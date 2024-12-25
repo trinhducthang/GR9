@@ -40,6 +40,10 @@ public class StadiumService {
         return stadium.orElse(null); // Trả về null nếu không tìm thấy
     }
 
+    public Stadium getStadiumById(Long id) {
+        return stadiumRepository.findById(id).orElse(null);
+    }
+
     // Thêm một sân bóng mới
     public Stadium addStadium(Stadium stadium) {
         return stadiumRepository.save(stadium);

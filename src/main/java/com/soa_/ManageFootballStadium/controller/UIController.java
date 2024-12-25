@@ -30,4 +30,9 @@ public class UIController {
     public String adminChart() {
         return "adminchart";
     }
+
+    @GetMapping("/StadiumDetails")
+    public String stadiumDetails() {
+        return "StadiumDetails";
+    }
 }

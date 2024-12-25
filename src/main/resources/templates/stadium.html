@@ -155,6 +155,15 @@
             <label for="imageUrl">URL Ảnh</label>
             <input type="url" id="imageUrl" placeholder="URL ảnh của sân bóng" required>
         </div>
+        <div class="form-group">
+            <label for="facilities">Cơ Sở Vật Chất</label>
+            <input type="text" id="facilities" placeholder="Danh sách cơ sở vật chất (ngăn cách bằng dấu phẩy)" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Mô Tả</label>
+            <textarea id="description" placeholder="Mô tả về sân bóng" rows="4" style="resize: none;" required></textarea>
+        </div>
+
 
         <button type="button" class="btn btn-primary" onclick="saveStadium()">Thêm Sân</button>
         <button type="button" class="btn btn-danger" onclick="cancelForm()">Hủy</button>
@@ -167,6 +176,8 @@
             <th>Địa Chỉ</th>
             <th>Giá Thuê</th>
             <th>Đánh Giá</th>
+            <th>Cơ sở vật chất</th>
+            <th>Mô tả</th>
             <th>Ảnh</th>
             <th>Hành Động</th>
         </tr>
@@ -255,19 +266,22 @@
         currentPageData.forEach(stadium => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${stadium.name}</td>
-                <td>${stadium.address}</td>
-                <td>${stadium.price} VND</td>
-                <td>${stadium.rating}</td>
-                <td><img src="${stadium.imageUrl}" alt="Ảnh sân" style="width: 100px; height: 50px;"></td>
-                <td>
-                    <button class="btn btn-primary" onclick="showEditForm(${stadium.id})">Sửa</button>
-                    <button class="btn btn-danger" onclick="deleteStadium(${stadium.id})">Xóa</button>
-                </td>
-            `;
+            <td>${stadium.name}</td>
+            <td>${stadium.address}</td>
+            <td>${stadium.price} VND</td>
+            <td>${stadium.rating}</td>
+            <td>${stadium.facilities}</td>
+            <td>${stadium.description}</td>
+            <td><img src="${stadium.imageUrl}" alt="Ảnh sân" style="width: 100px; height: 50px;"></td>
+            <td>
+                <button class="btn btn-primary" onclick="showEditForm(${stadium.id})">Sửa</button>
+                <button class="btn btn-danger" onclick="deleteStadium(${stadium.id})">Xóa</button>
+            </td>
+        `;
             tableBody.appendChild(row);
         });
     }
+
 
     function saveStadium() {
         const name = document.getElementById('name').value;
@@ -275,8 +289,10 @@
         const price = document.getElementById('price').value;
         const rating = document.getElementById('rating').value;
         const imageUrl = document.getElementById('imageUrl').value;
+        const facilities = document.getElementById('facilities').value;
+        const description = document.getElementById('description').value;
 
-        const newStadium = { name, address, price, rating, imageUrl };
+        const newStadium = { name, address, price, rating, imageUrl, facilities, description };
 
         if (editingStadiumId) {
             // Cập nhật sân bóng
@@ -286,7 +302,7 @@
                 body: JSON.stringify(newStadium)
             })
                 .then(response => response.json())
-                .then(data => {
+                .then(() => {
                     loadStadiums(); // Tải lại danh sách sân bóng
                     cancelForm(); // Đóng form chỉnh sửa
                 })
@@ -299,13 +315,14 @@
                 body: JSON.stringify(newStadium)
             })
                 .then(response => response.json())
-                .then(data => {
+                .then(() => {
                     loadStadiums(); // Tải lại danh sách sân bóng
                     cancelForm(); // Đóng form thêm sân
                 })
                 .catch(error => console.error("Error adding stadium:", error));
         }
     }
+
 
 
     function deleteStadium(id) {
@@ -329,12 +346,15 @@
             document.getElementById('address').value = stadium.address;
             document.getElementById('price').value = stadium.price;
             document.getElementById('rating').value = stadium.rating;
-            document.getElementById('imageUrl').value = stadium.imageUrl; // Đảm bảo URL ảnh được điền vào ô nhập
+            document.getElementById('imageUrl').value = stadium.imageUrl;
+            document.getElementById('facilities').value = stadium.facilities;
+            document.getElementById('description').value = stadium.description;
             document.getElementById('form-title').innerText = 'Chỉnh Sửa Sân Bóng';
             document.getElementById('form-container').style.display = 'block';
             editingStadiumId = id;
         }
     }
+
 
 
     function cancelForm() {
@@ -344,8 +364,11 @@
         document.getElementById('price').value = '';
         document.getElementById('rating').value = '';
         document.getElementById('imageUrl').value = '';
+        document.getElementById('facilities').value = '';
+        document.getElementById('description').value = '';
         editingStadiumId = null;
     }
+
 
     function renderPagination() {
         const paginationContainer = document.getElementById('pagination');

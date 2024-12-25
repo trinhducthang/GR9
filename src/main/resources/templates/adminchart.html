@@ -197,12 +197,58 @@
             max-width: 100%;
             height: 400px;
         }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .filter-form {
+            margin-bottom: 20px;
+        }
+
+        #filterDate {
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Trang Quản Trị - Quản lý Đặt Sân & Thống Kê</h1>
+    <div class="filter-form">
+        <label for="filterDate">Chọn ngày:</label>
+        <input type="date" id="filterDate" name="filterDate">
+        <button onclick="filterBookings()">Lọc</button>
+    </div>
 
     <!-- Booking Management Section -->
     <div class="booking-section">
@@ -234,6 +280,51 @@
 </div>
 
 <script>
+    // Dữ liệu đã lấy từ API (giả định)
+    let allBookings = [];
+
+    // Function để lọc dữ liệu theo ngày
+    function filterBookings() {
+        const filterDate = document.getElementById('filterDate').value;
+
+        if (!filterDate) {
+            alert("Vui lòng chọn một ngày để lọc.");
+            return;
+        }
+
+        // Lọc các booking dựa trên ngày (so sánh ngày bắt đầu và kết thúc)
+        const filteredBookings = allBookings.filter(booking => {
+            const startDate = new Date(booking.startTime).toISOString().split('T')[0]; // Lấy phần ngày từ startTime
+            const endDate = new Date(booking.endTime).toISOString().split('T')[0]; // Lấy phần ngày từ endTime
+
+            // Kiểm tra nếu ngày bắt đầu hoặc kết thúc trùng với ngày lọc
+            return startDate === filterDate || endDate === filterDate;
+        });
+
+        renderBookings(filteredBookings); // Hiển thị kết quả đã lọc
+    }
+
+    // Hàm để render dữ liệu vào bảng
+    function renderBookings(bookings) {
+        const bookingTable = document.getElementById('booking-table').getElementsByTagName('tbody')[0];
+        bookingTable.innerHTML = ''; // Xóa dữ liệu cũ
+
+        bookings.forEach(booking => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+            <td>${booking.id}</td>
+            <td>${booking.stadiumName}</td>
+            <td>${booking.userName}</td>
+            <td>${booking.startTime}</td>
+            <td>${booking.endTime}</td>
+            <td><button class="status-button ${booking.status.toLowerCase()}">${booking.status}</button></td>
+        `;
+
+            bookingTable.appendChild(row);
+        });
+    }
+
     const bookingTable = document.getElementById('booking-table').getElementsByTagName('tbody')[0];
     const paginationContainer = document.getElementById('pagination');
     const statsChart = document.getElementById('bookingReviewChart');

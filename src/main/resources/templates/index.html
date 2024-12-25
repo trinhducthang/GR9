@@ -280,7 +280,7 @@
             card.className = "stadium-card";
 
             card.innerHTML = `
-            <img src="${stadium.imageUrl}" alt="Ảnh sân bóng">
+            <img src="${stadium.imageUrl}" alt="Ảnh sân bóng" onclick="viewDetails(${stadium.id})">
             <h3>${stadium.name}</h3>
             <p>Giá: ${stadium.price} VND</p>
             <button onclick="rateStadium(${stadium.id})">Đánh giá</button>
@@ -291,6 +291,13 @@
             stadiumContainer.appendChild(card);
         });
     }
+
+    // Hàm điều hướng sang trang chi tiết
+    function viewDetails(stadiumId) {
+        localStorage.setItem('stadiumId',stadiumId)
+        window.location.href = `/StadiumDetails?stadiumId=${stadiumId}`;
+    }
+
 
     function setupPagination(data) {
         paginationContainer.innerHTML = ""; // Clear pagination

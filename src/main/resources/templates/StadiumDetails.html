@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stadium Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .stadium-details {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .stadium-details img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<a onclick="window.location.href='/'"><img style="position: absolute;top:0;left: 0; width: 10%;height: auto" src="https://png.pngtree.com/png-vector/20230903/ourmid/pngtree-flaming-soccer-ball-png-png-image_9937515.png"></a>
+<div class="stadium-details" id="stadium-details">
+    <h2>Chi tiết sân đấu</h2>
+<!--    <p><strong>ID:</strong> <span id="stadium-id"></span></p>-->
+    <p><strong>Tên sân:</strong> <span id="stadium-name"></span></p>
+    <p><strong>Địa chỉ:</strong> <span id="stadium-address"></span></p>
+    <p><strong>Giá:</strong> <span id="stadium-price"></span> VND</p>
+    <p><strong>Rating:</strong> <span id="stadium-rating"></span>/5</p>
+    <p><strong>Mô tả:</strong> <span id="stadium-description"></span></p>
+    <p><strong>Trang thiết bị:</strong> <span id="stadium-facilities"></span></p>
+    <img id="stadium-image" src="" alt="Stadium Image">
+</div>
+
+<script>
+    const stadiumId = localStorage.getItem('stadiumId'); // Replace with the actual ID you want to fetch
+
+    async function fetchStadiumDetails(id) {
+        try {
+            const response = await fetch(`http://localhost:8080/api/stadiums/details/${id}`);
+            if (!response.ok) {
+                throw new Error('Stadium not found');
+            }
+            const stadium = await response.json();
+            // document.getElementById('stadium-id').textContent = stadium.id;
+            document.getElementById('stadium-name').textContent = stadium.name;
+            document.getElementById('stadium-address').textContent = stadium.address;
+            document.getElementById('stadium-price').textContent = stadium.price;
+            document.getElementById('stadium-rating').textContent = stadium.rating.toFixed(1);
+            document.getElementById('stadium-description').textContent = stadium.description;
+            document.getElementById('stadium-facilities').textContent = stadium.facilities;
+            document.getElementById('stadium-image').src = stadium.imageUrl;
+        } catch (error) {
+            document.getElementById('stadium-details').innerHTML = `<p>${error.message}</p>`;
+        }
+    }
+
+    fetchStadiumDetails(stadiumId);
+</script>
+</body>
+</html>
